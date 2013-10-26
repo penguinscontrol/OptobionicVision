@@ -13,9 +13,10 @@ soma{
   cm=1
 	insert hh
 	insert opto
-		N_opto = 50
+		N_opto = 500
 		gchr2_max_opto = 3.6e-2
-  }
+}
+  
 /*
 axon{
   nseg=2
@@ -35,9 +36,9 @@ connect soma(1), axon(0)
 objectvar stim
 soma stim = new LitClamp(0.5)
 setpointer stim.irr(),soma.irr_opto(0.5)
-stim.del = 10
-stim.dur = 50
-stim.amp = 20
+stim.del = 5
+stim.dur = 495
+stim.amp = 10
 
 
 /*
@@ -55,37 +56,54 @@ stim3.del = 900
 stim3.dur = 1
 stim3.amp = 1e-20
 */
-tstop = 50
+tstop = 500
 
-objref p,g,h, s3, s1, s4,s6,vsoma,lstim,isod,iopt
+objref p,g,k,l, s3, s1, s4,s6
+objref vsoma,lstim,isod,iopt
+objref m,n,h
 //objref aonev,athree,btwo,bfour
 p = new Graph()
-p.size(0,tstop,-80,50)
+p.size(0,tstop,0,500)
 g = new Graph()
 g.size(0,tstop,-2,2)
-h = new Graph()
-h.size(0,tstop,0,1e10)
+k = new Graph()
+k.size(0,tstop,0,1.1*stim.amp)
+l = new Graph()
+l.size(0,tstop,0,1)
+
 s3 = new Vector()
 s1 = new Vector()
 s4 = new Vector()
 s6 = new Vector()
+
 vsoma = new Vector()
 lstim = new Vector()
 isod = new Vector()
-iopt = new Vector()/*
+iopt = new Vector()
+
+m = new Vector()
+n = new Vector()
+h = new Vector()
+/*
 aonev = new Vector()
 athree = new Vector()
 btwo = new Vector()
-bfour = new Vector()*/
+bfour = new Vector()
+*/
 
 s1.record(&soma.s1_opto(.5))
 s4.record(&soma.s4_opto(.5))
 s6.record(&soma.s6_opto(.5))
 s3.record(&soma.s3_opto(.5))
+
 vsoma.record(&soma.v(.5))
-lstim.record(&soma.flux_opto(0.5))
+lstim.record(&stim.irr)
 isod.record(&soma.ina(0.5))
 iopt.record(&soma.ilit_opto(0.5))
+
+m.record(&soma.m_hh(0.5))
+n.record(&soma.n_hh(0.5))
+h.record(&soma.h_hh(0.5))
 run()
 
 vsoma.label("Vsoma")
@@ -96,6 +114,9 @@ s3.label("s3: High Open")
 lstim.label("flux")
 isod.label("Sodium")
 iopt.label("Light Current")
+m.label("m")
+n.label("n")
+h.label("h")
 
 s3.plot(p,dt,1,1)
 s4.plot(p,dt,2,1)
@@ -104,4 +125,7 @@ s6.plot(p,dt,4,1)
 vsoma.plot(p,dt,5,1)
 isod.plot(g,dt,1,1)
 iopt.plot(g,dt,2,1)
-lstim.plot(h,dt,3,1)
+lstim.plot(k,dt,3,1)
+m.plot(l,dt,1,1)
+n.plot(l,dt,2,1)
+h.plot(l,dt,3,1)

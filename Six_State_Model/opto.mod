@@ -18,12 +18,12 @@ UNITS {
 
 PARAMETER {
 	gchr2_max = 0.036  (S/cm2)
-	sigma = 1e-8	(/um2)
+	sigma = 1e-8	(um2)
 	U0    = 43     	(mV)
 	U1    = -4.1    
 	gamma = 0.05
 	N = 50
-	e = 8 (mV)
+	e = 0 (mV)
 	a10 = 5 (/ms)
 	a2 = 1 (/ms)
 	a30 = 0.022 (/ms)
@@ -35,17 +35,17 @@ PARAMETER {
 	b21 = 0.0048 (/ms)
 	b3 = 1 (/ms)
 	b40 = 1.1 (/ms)
-	phi_0 = 1e16 (/s/cm2)
-	phot_e = 4.2264e-19 (J)
+	phi_0 = 1e8 (/s)
+	phot_e = 4.22648e-19 (J)
 }
 
 ASSIGNED {
-	irr (mW)
+	irr (mW/mm2)
 	v  (mV)
 	: ina  (mA/cm2)
 	ilit (mA/cm2)
 	gchr2 (S/cm2)
-	flux (/ms/cm2)
+	flux (/ms)
 	a1 (/ms)
 	a3 (/ms)
 	b2 (/ms)
@@ -93,16 +93,16 @@ CONSERVE s1+s2+s3+s4+s5+s6 = N
 }
 
 PROCEDURE rates() {
-flux=N*irr*sigma/phot_e*(1e2) : 6.62606e-34*299792458/(470e-9) i.e. hc/lambda = energy of one photon
-: UNITSOFF
-: flux = irr
-: UNITSON
+flux=irr*sigma/phot_e*(1e-12) : 6.62606e-34*299792458/(470e-9) i.e. hc/lambda = energy of one photon
+
 if ((1e3)*flux < phi_0){
 a1 = a10*((1e3)*flux/phi_0)
 a3 = a30
 b2 = b20
 b4 = b40*((1e3)*flux/phi_0)
-}else{
+}
+else
+{
 a1 = a10*((1e3)*flux/phi_0)
 a3 = a30+a31*log((1e3)*flux/phi_0)
 b2 = b20+b21*log((1e3)*flux/phi_0)

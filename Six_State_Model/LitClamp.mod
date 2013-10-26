@@ -16,11 +16,11 @@ UNITS {
 PARAMETER {
 	del (ms)
 	dur (ms) <0, 1e9>
-	amp (mW/cm2)
+	amp (mW/mm2)
 }
 
 ASSIGNED {
-	irr (mW/cm2)
+	irr (mW/mm2)
 }
 
 INITIAL{

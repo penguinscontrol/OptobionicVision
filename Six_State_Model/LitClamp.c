@@ -93,8 +93,8 @@ extern int nrn_get_mechtype();
  static HocParmUnits _hoc_parm_units[] = {
  "del", "ms",
  "dur", "ms",
- "amp", "mW/cm2",
- "irr", "mW/cm2",
+ "amp", "mW/mm2",
+ "irr", "mW/mm2",
  0,0
 };
  static double v = 0;

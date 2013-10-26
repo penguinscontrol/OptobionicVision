@@ -123,13 +123,13 @@ extern int nrn_get_mechtype();
 #define b1 b1_opto
  double b1 = 0.13;
 #define e e_opto
- double e = 8;
+ double e = 0;
 #define gamma gamma_opto
  double gamma = 0.05;
 #define phot_e phot_e_opto
- double phot_e = 4.2264e-019;
+ double phot_e = 4.22648e-019;
 #define phi_0 phi_0_opto
- double phi_0 = 1e+016;
+ double phi_0 = 1e+008;
 #define sigma sigma_opto
  double sigma = 1e-008;
  /* some parameters have upper and lower limits */
@@ -137,7 +137,7 @@ extern int nrn_get_mechtype();
  0,0,0
 };
  static HocParmUnits _hoc_parm_units[] = {
- "sigma_opto", "/um2",
+ "sigma_opto", "um2",
  "U0_opto", "mV",
  "e_opto", "mV",
  "a10_opto", "/ms",
@@ -151,13 +151,13 @@ extern int nrn_get_mechtype();
  "b21_opto", "/ms",
  "b3_opto", "/ms",
  "b40_opto", "/ms",
- "phi_0_opto", "/s/cm2",
+ "phi_0_opto", "/s",
  "phot_e_opto", "J",
  "gchr2_max_opto", "S/cm2",
- "irr_opto", "mW",
+ "irr_opto", "mW/mm2",
  "ilit_opto", "mA/cm2",
  "gchr2_opto", "S/cm2",
- "flux_opto", "/ms/cm2",
+ "flux_opto", "/ms",
  0,0
 };
  static double delta_t = 0.01;
@@ -405,7 +405,7 @@ for(_i=1;_i<6;_i++){
  }
  
 static int  rates ( _p, _ppvar, _thread, _nt ) double* _p; Datum* _ppvar; Datum* _thread; _NrnThread* _nt; {
-   flux = N * irr * sigma / phot_e * ( 1e2 ) ;
+   flux = irr * sigma / phot_e * ( 1e-12 ) ;
    if ( ( 1e3 ) * flux < phi_0 ) {
      a1 = a10 * ( ( 1e3 ) * flux / phi_0 ) ;
      a3 = a30 ;
