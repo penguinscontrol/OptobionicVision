@@ -1,0 +1,107 @@
+
+//nrn_load_dll("nrnmech.dll")
+load_file("nrngui.hoc")
+load_proc("nrnmainmenu")
+dt = 1e-4
+create soma, axon
+v_init=-65
+soma{
+  nseg=1
+  diam=30
+  L=30
+  Ra=150
+  cm=1
+	insert hh
+	insert opto
+		N_opto = 50
+		gchr2_max_opto = 3.6e-2
+  }
+/*
+axon{
+  nseg=2
+  diam=8
+  L=900
+  Ra=120
+  cm=2
+	insert hh
+	insert opto
+		N_opto=50
+		kr_opto=1/3000
+  }
+
+connect soma(1), axon(0)
+*/
+
+objectvar stim
+soma stim = new LitClamp(0.5)
+setpointer stim.irr(),soma.irr_opto(0.5)
+stim.del = 10
+stim.dur = 50
+stim.amp = 20
+
+
+/*
+objectvar stim2
+axon stim2 = new LitClamp(0.01)
+setpointer stim2.irr(),axon.irr_opto(0.01)
+stim2.del = 900
+stim2.dur = 1
+stim2.amp = 1e-20
+
+objectvar stim3
+axon stim3 = new LitClamp(0.99)
+setpointer stim3.irr(),axon.irr_opto(0.99)
+stim3.del = 900
+stim3.dur = 1
+stim3.amp = 1e-20
+*/
+tstop = 50
+
+objref p,g,h, s3, s1, s4,s6,vsoma,lstim,isod,iopt
+//objref aonev,athree,btwo,bfour
+p = new Graph()
+p.size(0,tstop,-80,50)
+g = new Graph()
+g.size(0,tstop,-2,2)
+h = new Graph()
+h.size(0,tstop,0,1e10)
+s3 = new Vector()
+s1 = new Vector()
+s4 = new Vector()
+s6 = new Vector()
+vsoma = new Vector()
+lstim = new Vector()
+isod = new Vector()
+iopt = new Vector()/*
+aonev = new Vector()
+athree = new Vector()
+btwo = new Vector()
+bfour = new Vector()*/
+
+s1.record(&soma.s1_opto(.5))
+s4.record(&soma.s4_opto(.5))
+s6.record(&soma.s6_opto(.5))
+s3.record(&soma.s3_opto(.5))
+vsoma.record(&soma.v(.5))
+lstim.record(&soma.flux_opto(0.5))
+isod.record(&soma.ina(0.5))
+iopt.record(&soma.ilit_opto(0.5))
+run()
+
+vsoma.label("Vsoma")
+s1.label("s1: Close Gnd")
+s4.label("s4: Weak Open")
+s6.label("s6: Close NonGnd")
+s3.label("s3: High Open")
+lstim.label("flux")
+isod.label("Sodium")
+iopt.label("Light Current")
+
+s3.plot(p,dt,1,1)
+s4.plot(p,dt,2,1)
+s1.plot(p,dt,3,1)
+s6.plot(p,dt,4,1)
+vsoma.plot(p,dt,5,1)
+isod.plot(g,dt,1,1)
+iopt.plot(g,dt,2,1)
+lstim.plot(h,dt,3,1)
