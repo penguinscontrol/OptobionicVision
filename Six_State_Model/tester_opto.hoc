@@ -2,7 +2,11 @@
 //nrn_load_dll("nrnmech.dll")
 load_file("nrngui.hoc")
 load_proc("nrnmainmenu")
+
 dt = 1e-4
+
+tstop = 600
+
 create soma, axon
 v_init=-65
 soma{
@@ -13,11 +17,10 @@ soma{
   cm=1
 	insert hh
 	insert opto
-		N_opto = 500
+		N_opto = 1000
 		gchr2_max_opto = 3.6e-2
 }
-  
-/*
+
 axon{
   nseg=2
   diam=8
@@ -26,29 +29,33 @@ axon{
   cm=2
 	insert hh
 	insert opto
-		N_opto=50
-		kr_opto=1/3000
+		N_opto = 1000
+		gchr2_max_opto = 3.6e-2
   }
 
 connect soma(1), axon(0)
-*/
 
 objectvar stim
 soma stim = new LitClamp(0.5)
 setpointer stim.irr(),soma.irr_opto(0.5)
-stim.del = 5e2
-stim.dur = 1e3
-stim.amp = 10
+stim.del = 0
+stim.dur = 500
+stim.amp = 1
 
 
-/*
 objectvar stim2
 axon stim2 = new LitClamp(0.01)
-setpointer stim2.irr(),axon.irr_opto(0.01)
-stim2.del = 900
-stim2.dur = 1
-stim2.amp = 1e-20
+setpointer stim2.irr(),axon.irr_opto(0.1)
+stim2.del = 0
+stim2.dur = 200
+stim2.amp = 0
 
+objectvar voltclamp
+soma voltclamp = new SEClamp(0.5)
+voltclamp.dur1 = tstop
+voltclamp.amp1 = -70
+
+/*
 objectvar stim3
 axon stim3 = new LitClamp(0.99)
 setpointer stim3.irr(),axon.irr_opto(0.99)
@@ -56,16 +63,15 @@ stim3.del = 900
 stim3.dur = 1
 stim3.amp = 1e-20
 */
-tstop = 1e4
 
 objref p,g,k,l, s3, s1, s4,s6
 objref vsoma,lstim,isod,iopt
 objref m,n,h
 //objref aonev,athree,btwo,bfour
 p = new Graph()
-p.size(0,tstop,0,10)
+p.size(0,tstop,0,N_opto)
 g = new Graph()
-g.size(0,tstop,-2,2)
+g.size(0,tstop,-2e-1,2e-1)
 k = new Graph()
 k.size(0,tstop,-70,50)
 l = new Graph()

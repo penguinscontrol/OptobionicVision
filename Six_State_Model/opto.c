@@ -127,11 +127,11 @@ extern int nrn_get_mechtype();
 #define gamma gamma_opto
  double gamma = 0.05;
 #define phot_e phot_e_opto
- double phot_e = 4.22648e-019;
+ double phot_e = 4.22648e-19;
 #define phi_0 phi_0_opto
- double phi_0 = 1e+008;
+ double phi_0 = 1e+16;
 #define sigma sigma_opto
- double sigma = 1e-008;
+ double sigma = 1e-08;
  /* some parameters have upper and lower limits */
  static HocParmLimits _hoc_parm_limits[] = {
  0,0,0
@@ -151,13 +151,13 @@ extern int nrn_get_mechtype();
  "b21_opto", "/ms",
  "b3_opto", "/ms",
  "b40_opto", "/ms",
- "phi_0_opto", "/s",
+ "phi_0_opto", "/s/cm2",
  "phot_e_opto", "J",
  "gchr2_max_opto", "S/cm2",
  "irr_opto", "mW/mm2",
  "ilit_opto", "mA/cm2",
  "gchr2_opto", "S/cm2",
- "flux_opto", "/ms",
+ "flux_opto", "/s/cm2",
  0,0
 };
  static double delta_t = 0.01;
@@ -254,7 +254,7 @@ static void nrn_alloc(_prop)
  	hoc_register_cvode(_mechtype, _ode_count, _ode_map, _ode_spec, _ode_matsol);
  	hoc_register_tolerance(_mechtype, _hoc_state_tol, &_atollist);
  	hoc_register_var(hoc_scdoub, hoc_vdoub, hoc_intfunc);
- 	ivoc_help("help ?1 opto C:/Users/Radu/Documents/GitHub/OptobionicVision/Six_State_Model/opto.mod\n");
+ 	ivoc_help("help ?1 opto /cygdrive/c/Users/JuanandKimi/Documents/GitHub/OptobionicVision/Six_State_Model/opto.mod\n");
  hoc_register_limits(_mechtype, _hoc_parm_limits);
  hoc_register_units(_mechtype, _hoc_parm_units);
  }
@@ -405,18 +405,16 @@ for(_i=1;_i<6;_i++){
  }
  
 static int  rates ( _p, _ppvar, _thread, _nt ) double* _p; Datum* _ppvar; Datum* _thread; _NrnThread* _nt; {
-   flux = irr * sigma / phot_e * ( 1e-12 ) ;
-   if ( ( 1e3 ) * flux < phi_0 ) {
-     a1 = a10 * ( ( 1e3 ) * flux / phi_0 ) ;
+   flux = irr / phot_e * ( 1e-1 ) ;
+   a1 = a10 * ( flux / phi_0 ) ;
+   b4 = b40 * ( flux / phi_0 ) ;
+   if ( flux < phi_0 ) {
      a3 = a30 ;
      b2 = b20 ;
-     b4 = b40 * ( ( 1e3 ) * flux / phi_0 ) ;
      }
    else {
-     a1 = a10 * ( ( 1e3 ) * flux / phi_0 ) ;
-     a3 = a30 + a31 * log ( ( 1e3 ) * flux / phi_0 ) ;
-     b2 = b20 + b21 * log ( ( 1e3 ) * flux / phi_0 ) ;
-     b4 = b40 * ( ( 1e3 ) * flux / phi_0 ) ;
+     a3 = a30 + a31 * log ( flux / phi_0 ) ;
+     b2 = b20 + b21 * log ( flux / phi_0 ) ;
      }
     return 0; }
  

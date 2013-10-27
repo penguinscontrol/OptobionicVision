@@ -1,9 +1,10 @@
-: 4 state model of optogenetics
+: 6 state model of optogenetics
 
 NEURON {
 	SUFFIX opto
 	: USEION na WRITE ina
-	RANGE gchr2,gchr2_max,irr,flux,ilit
+	RANGE gchr2,gchr2_max,irr,flux
+	RANGE ilit
 	ELECTRODE_CURRENT ilit
 }
 
@@ -35,7 +36,7 @@ PARAMETER {
 	b21 = 0.0048 (/ms)
 	b3 = 1 (/ms)
 	b40 = 1.1 (/ms)
-	phi_0 = 1e8 (/s)
+	phi_0 = 1e16 (/s/cm2)
 	phot_e = 4.22648e-19 (J)
 }
 
@@ -45,7 +46,7 @@ ASSIGNED {
 	: ina  (mA/cm2)
 	ilit (mA/cm2)
 	gchr2 (S/cm2)
-	flux (/ms)
+	flux (/s/cm2)
 	a1 (/ms)
 	a3 (/ms)
 	b2 (/ms)
@@ -75,7 +76,7 @@ INITIAL{
 BREAKPOINT{
 	SOLVE states METHOD sparse
 	gchr2=gchr2_max*fdep()*vdep(v)
-	: ina  = gchr2*(v+e)
+	: ina  = gchr2*(v-e)
 	ilit = gchr2*(v-e)
 }
 
@@ -93,20 +94,19 @@ CONSERVE s1+s2+s3+s4+s5+s6 = N
 }
 
 PROCEDURE rates() {
-flux=irr*sigma/phot_e*(1e-12) : 6.62606e-34*299792458/(470e-9) i.e. hc/lambda = energy of one photon
+flux=irr/phot_e*(1e-1) : 6.62606e-34*299792458/(470e-9) i.e. hc/lambda = energy of one photon
 
-if ((1e3)*flux < phi_0){
-a1 = a10*((1e3)*flux/phi_0)
+a1 = a10*(flux/phi_0)
+b4 = b40*(flux/phi_0)
+
+if (flux < phi_0){
 a3 = a30
 b2 = b20
-b4 = b40*((1e3)*flux/phi_0)
 }
 else
 {
-a1 = a10*((1e3)*flux/phi_0)
-a3 = a30+a31*log((1e3)*flux/phi_0)
-b2 = b20+b21*log((1e3)*flux/phi_0)
-b4 = b40*((1e3)*flux/phi_0)
+a3 = a30+a31*log(flux/phi_0)
+b2 = b20+b21*log(flux/phi_0)
 }
 : a1 = a10+a10*((1e3)*flux/phi_0-1)*((1e3)*flux>phi_0)
 : a3 = a30+a31*log((1e3)*flux/phi_0)*((1e3)*flux>phi_0)
