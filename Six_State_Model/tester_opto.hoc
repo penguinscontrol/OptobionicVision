@@ -3,7 +3,7 @@
 load_file("nrngui.hoc")
 load_proc("nrnmainmenu")
 
-dt = 1e-4
+dt = 1e-3
 
 tstop = 600
 
@@ -17,63 +17,73 @@ soma{
   cm=1
 	insert hh
 	insert opto
-		N_opto = 1000
+		N_opto = 3e-2
 		gchr2_max_opto = 3.6e-2
 }
 
 axon{
-  nseg=2
-  diam=8
-  L=900
-  Ra=120
-  cm=2
+  nseg=1
+  diam=30
+  L=30
+  Ra=150
+  cm=1
 	insert hh
 	insert opto
-		N_opto = 1000
+		N_opto = 3e-2
 		gchr2_max_opto = 3.6e-2
   }
-
+/*
 connect soma(1), axon(0)
+*/
 
 objectvar stim
 soma stim = new LitClamp(0.5)
-setpointer stim.irr(),soma.irr_opto(0.5)
+setpointer stim.irr(), soma.irr_opto(0.5)
 stim.del = 0
 stim.dur = 500
-stim.amp = 1
+stim.amp = 3e-2
 
 
 objectvar stim2
 axon stim2 = new LitClamp(0.01)
 setpointer stim2.irr(),axon.irr_opto(0.1)
 stim2.del = 0
-stim2.dur = 200
-stim2.amp = 0
+stim2.dur = 500
+stim2.amp = 3e-2
 
-objectvar voltclamp
-soma voltclamp = new SEClamp(0.5)
-voltclamp.dur1 = tstop
-voltclamp.amp1 = -70
+objectvar voltclamp1
+axon voltclamp1 = new SEClamp(0.5)
+voltclamp1.rs = 1e-5
+voltclamp1.dur1 = tstop
+voltclamp1.amp1 = -70
+
+objectvar voltclamp2
+soma voltclamp2 = new SEClamp(0.5)
+voltclamp2.rs = 1e-5
+voltclamp2.dur1 = tstop
+voltclamp2.amp1 = -70
+
 
 /*
 objectvar stim3
 axon stim3 = new LitClamp(0.99)
 setpointer stim3.irr(),axon.irr_opto(0.99)
-stim3.del = 900
+stim3.del = 0
 stim3.dur = 1
-stim3.amp = 1e-20
+stim3.amp = 0
 */
 
 objref p,g,k,l, s3, s1, s4,s6
 objref vsoma,lstim,isod,iopt
+objref a_iopt
 objref m,n,h
 //objref aonev,athree,btwo,bfour
 p = new Graph()
 p.size(0,tstop,0,N_opto)
 g = new Graph()
-g.size(0,tstop,-2e-1,2e-1)
+g.size(0,tstop,-2e-2,2e-2)
 k = new Graph()
-k.size(0,tstop,-70,50)
+k.size(0,tstop,-100,50)
 l = new Graph()
 l.size(0,tstop,0,1)
 
@@ -86,10 +96,12 @@ vsoma = new Vector()
 lstim = new Vector()
 isod = new Vector()
 iopt = new Vector()
+a_iopt = new Vector()
 
 m = new Vector()
 n = new Vector()
 h = new Vector()
+
 /*
 aonev = new Vector()
 athree = new Vector()
@@ -106,6 +118,7 @@ vsoma.record(&soma.v(.5))
 lstim.record(&stim.irr)
 isod.record(&soma.ina(0.5))
 iopt.record(&soma.ilit_opto(0.5))
+a_iopt.record(&axon.ilit_opto(0.5))
 
 m.record(&soma.m_hh(0.5))
 n.record(&soma.n_hh(0.5))
@@ -119,7 +132,8 @@ s6.label("s6: Close NonGnd")
 s3.label("s3: High Open")
 lstim.label("flux")
 isod.label("Sodium")
-iopt.label("Light Current")
+iopt.label("Light Current E0")
+a_iopt.label("Light Current E0x10")
 m.label("m")
 n.label("n")
 h.label("h")
@@ -128,8 +142,9 @@ s3.plot(p,dt,1,1)
 s4.plot(p,dt,2,1)
 s1.plot(p,dt,3,1)
 s6.plot(p,dt,4,1)
-isod.plot(g,dt,1,1)
 iopt.plot(g,dt,2,1)
+isod.plot(g,dt,3,1)
+a_iopt.plot(g,dt,2,1)
 lstim.plot(k,dt,1,1)
 vsoma.plot(k,dt,2,1)
 m.plot(l,dt,1,1)

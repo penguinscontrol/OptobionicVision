@@ -87,7 +87,7 @@ extern int nrn_get_mechtype();
  /* declare global and static user variables */
  /* some parameters have upper and lower limits */
  static HocParmLimits _hoc_parm_limits[] = {
- "dur", 0, 1e+09,
+ "dur", 0, 1e+009,
  0,0,0
 };
  static HocParmUnits _hoc_parm_units[] = {
@@ -162,7 +162,7 @@ static void nrn_alloc(_prop)
      _nrn_setdata_reg(_mechtype, _setdata);
   hoc_register_dparam_size(_mechtype, 3);
  	hoc_register_var(hoc_scdoub, hoc_vdoub, hoc_intfunc);
- 	ivoc_help("help ?1 LitClamp /cygdrive/c/Users/JuanandKimi/Documents/GitHub/OptobionicVision/Six_State_Model/LitClamp.mod\n");
+ 	ivoc_help("help ?1 LitClamp C:/Users/Radu/Documents/GitHub/OptobionicVision/Six_State_Model/LitClamp.mod\n");
  hoc_register_limits(_mechtype, _hoc_parm_limits);
  hoc_register_units(_mechtype, _hoc_parm_units);
  }

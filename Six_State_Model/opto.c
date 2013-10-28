@@ -127,11 +127,11 @@ extern int nrn_get_mechtype();
 #define gamma gamma_opto
  double gamma = 0.05;
 #define phot_e phot_e_opto
- double phot_e = 4.22648e-19;
+ double phot_e = 4.22648e-019;
 #define phi_0 phi_0_opto
- double phi_0 = 1e+16;
+ double phi_0 = 1e+016;
 #define sigma sigma_opto
- double sigma = 1e-08;
+ double sigma = 1e-008;
  /* some parameters have upper and lower limits */
  static HocParmLimits _hoc_parm_limits[] = {
  0,0,0
@@ -254,7 +254,7 @@ static void nrn_alloc(_prop)
  	hoc_register_cvode(_mechtype, _ode_count, _ode_map, _ode_spec, _ode_matsol);
  	hoc_register_tolerance(_mechtype, _hoc_state_tol, &_atollist);
  	hoc_register_var(hoc_scdoub, hoc_vdoub, hoc_intfunc);
- 	ivoc_help("help ?1 opto /cygdrive/c/Users/JuanandKimi/Documents/GitHub/OptobionicVision/Six_State_Model/opto.mod\n");
+ 	ivoc_help("help ?1 opto C:/Users/Radu/Documents/GitHub/OptobionicVision/Six_State_Model/opto.mod\n");
  hoc_register_limits(_mechtype, _hoc_parm_limits);
  hoc_register_units(_mechtype, _hoc_parm_units);
  }
@@ -685,13 +685,6 @@ _cntml = _ml->_nodecount;
 _thread = _ml->_thread;
 for (_iml = 0; _iml < _cntml; ++_iml) {
  _p = _ml->_data[_iml]; _ppvar = _ml->_pdata[_iml];
-#if EXTRACELLULAR
- _nd = _ml->_nodelist[_iml];
- if (_nd->_extnode) {
-    _v = NODEV(_nd) +_nd->_extnode->_v[0];
- }else
-#endif
- {
 #if CACHEVEC
   if (use_cachevec) {
     _v = VEC_V(_ni[_iml]);
@@ -701,14 +694,13 @@ for (_iml = 0; _iml < _cntml; ++_iml) {
     _nd = _ml->_nodelist[_iml];
     _v = NODEV(_nd);
   }
- }
  v = _v;
  initmodel(_p, _ppvar, _thread, _nt);
 }}
 
 static double _nrn_current(double* _p, Datum* _ppvar, Datum* _thread, _NrnThread* _nt, double _v){double _current=0.;v=_v;{ {
    gchr2 = gchr2_max * fdep ( _threadargs_ ) * vdep ( _threadargscomma_ v ) ;
-   ilit = gchr2 * ( v - e ) ;
+   ilit = - gchr2 * ( v - e ) ;
    }
  _current += ilit;
 
@@ -725,13 +717,6 @@ _cntml = _ml->_nodecount;
 _thread = _ml->_thread;
 for (_iml = 0; _iml < _cntml; ++_iml) {
  _p = _ml->_data[_iml]; _ppvar = _ml->_pdata[_iml];
-#if EXTRACELLULAR
- _nd = _ml->_nodelist[_iml];
- if (_nd->_extnode) {
-    _v = NODEV(_nd) +_nd->_extnode->_v[0];
- }else
-#endif
- {
 #if CACHEVEC
   if (use_cachevec) {
     _v = VEC_V(_ni[_iml]);
@@ -741,24 +726,18 @@ for (_iml = 0; _iml < _cntml; ++_iml) {
     _nd = _ml->_nodelist[_iml];
     _v = NODEV(_nd);
   }
- }
  _g = _nrn_current(_p, _ppvar, _thread, _nt, _v + .001);
  	{ _rhs = _nrn_current(_p, _ppvar, _thread, _nt, _v);
  	}
  _g = (_g - _rhs)/.001;
 #if CACHEVEC
   if (use_cachevec) {
-	VEC_RHS(_ni[_iml]) += _rhs;
+	VEC_RHS(_ni[_iml]) -= _rhs;
   }else
 #endif
   {
-	NODERHS(_nd) += _rhs;
+	NODERHS(_nd) -= _rhs;
   }
-#if EXTRACELLULAR
- if (_nd->_extnode) {
-   *_nd->_extnode->_rhs[0] += _rhs;
- }
-#endif
  
 }}
 
@@ -772,20 +751,15 @@ _cntml = _ml->_nodecount;
 _thread = _ml->_thread;
 for (_iml = 0; _iml < _cntml; ++_iml) {
  _p = _ml->_data[_iml];
- _nd = _ml->_nodelist[_iml];
 #if CACHEVEC
   if (use_cachevec) {
-	VEC_D(_ni[_iml]) -= _g;
+	VEC_D(_ni[_iml]) += _g;
   }else
 #endif
   {
-	NODED(_nd) -= _g;
+     _nd = _ml->_nodelist[_iml];
+	NODED(_nd) += _g;
   }
-#if EXTRACELLULAR
- if (_nd->_extnode) {
-   *_nd->_extnode->_d[0] += _g;
- }
-#endif
  
 }}
 
@@ -801,13 +775,6 @@ _thread = _ml->_thread;
 for (_iml = 0; _iml < _cntml; ++_iml) {
  _p = _ml->_data[_iml]; _ppvar = _ml->_pdata[_iml];
  _nd = _ml->_nodelist[_iml];
-#if EXTRACELLULAR
- _nd = _ml->_nodelist[_iml];
- if (_nd->_extnode) {
-    _v = NODEV(_nd) +_nd->_extnode->_v[0];
- }else
-#endif
- {
 #if CACHEVEC
   if (use_cachevec) {
     _v = VEC_V(_ni[_iml]);
@@ -817,7 +784,6 @@ for (_iml = 0; _iml < _cntml; ++_iml) {
     _nd = _ml->_nodelist[_iml];
     _v = NODEV(_nd);
   }
- }
  _break = t + .5*dt; _save = t;
  v=_v;
 {

@@ -5,7 +5,7 @@ NEURON {
 	: USEION na WRITE ina
 	RANGE gchr2,gchr2_max,irr,flux
 	RANGE ilit
-	ELECTRODE_CURRENT ilit
+	NONSPECIFIC_CURRENT ilit
 }
 
 UNITS {
@@ -77,7 +77,7 @@ BREAKPOINT{
 	SOLVE states METHOD sparse
 	gchr2=gchr2_max*fdep()*vdep(v)
 	: ina  = gchr2*(v-e)
-	ilit = gchr2*(v-e)
+	ilit = -gchr2*(v-e)
 }
 
 KINETIC states{
