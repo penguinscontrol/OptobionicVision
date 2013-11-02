@@ -1,16 +1,19 @@
 : 4 state model of optogenetics
 
 NEURON {
-	SUFFIX opto
-	USEION na WRITE ina
-	RANGE gchr2
-	GLOBAL ka1, ka2, e12, e21
+	SUFFIX opto2
+	: USEION na WRITE ina
+	RANGE gchr2,ilit, irr, flux
+	ELECTRODE_CURRENT ilit
 }
 
 UNITS {
-	(S)  = (siemens)
-	(mV) = (millivolt)
-	(mA) = (milliamp)
+        (S)  = (siemens)
+        (mV) = (millivolt)
+        (mA) = (milliamp)
+        (J) = (joules)
+        (mW) = (milliwatt)
+        (um) = (micrometer)
 }
 
 PARAMETER {
@@ -19,24 +22,28 @@ PARAMETER {
 	epsilon2  = 0.12   
 	kd1   = 0.1    (/ms)
 	kd2   = 0.05   (/ms)
-	U0    = 40     (mV)
-	U1    = 15     (mV)
+	U0    = 43     (mV)
+	U1    = -4.1     (mV)
 	go1   = 100     (S/cm2) :WRONG
 	go2   = 1      (S/cm2) :WRONG
-	flux = 5 (/ms)
 	kr =.002(/ms)
 	N =10
-	e = 8 (mV)
+	e = 0 (mV)
+	phot_e = 4.22648e-19 (J)
 }
 
 ASSIGNED {
+	irr (mW/mm2)
 	v  (mV)
 	:e(mV)
-	ina  (mA/cm2)
+	:ina  (mA/cm2)
+	ilit (mA/cm2)
 	ka1 (/ms)
 	ka2 (/ms)
 	e12 (/ms)
 	e21  (/ms)
+	flux (/s/cm2)
+	flux0 (/s/cm2)
 }
 
 STATE {
@@ -55,30 +62,33 @@ INITIAL{
 }
 
 BREAKPOINT{
-	SOLVE states METHOD cnexp
+	SOLVE states METHOD sparse
 	UNITSOFF
-	gchr2=(No1/N + (go2/go1)*No2/N)*(1-exp(-(v+8)/U0))/((v+8)/U1)
+	gchr2=(No1/N + (go2/go1)*No2/N)*(1-exp(v/U0))/U1
 	UNITSON
-	ina  = gchr2*(v+8)
+	ilit  = gchr2*(v-e)
 	
 }
 
-DERIVATIVE states{
+KINETIC states{
 rates(v)
-No1'= ka1*Nc1-(kd1+e12)*No1+e21*No2
-No2'= ka2*Nc2-(kd2+e21)*No2+e12*No1
-Nc2' = kd2*No2-(ka2+kr)*Nc2
-Nc1' = kd1*No1-ka1*Nc1 +kr*Nc2
+~Nc1<->No1 (ka1,kd1)
+~No1<->No2 (e12,e21)
+~No2<->Nc2 (kd2,ka2)
+~Nc2 <->Nc1 (kr,0)
+CONSERVE Nc1+Nc2+No1+No2=N
 }
 
 UNITSOFF
 
 PROCEDURE rates(v(mV)) {  :Computes rate and other constants at current v.
                       :Call once from HOC to initialize inf at resting v.
-		e12=.011+0.005*log(flux/0.024)
-		e21=0.008+0.004*log(flux/0.024)	
-		ka1=epsilon1*flux
-		ka2=epsilon2*flux
+		flux=irr/phot_e*(1e-1)
+		flux0=1.0e-20/phot_e*(1e-1)
+		e12=.011+0.005*log(flux/flux0)
+		e21=0.008+0.004*log(flux/flux0)	
+		ka1=epsilon1*flux*1e-19
+		ka2=epsilon2*flux*1e-19
 		}
 		
 FUNCTION vtrap(x,y) {  :Traps for 0 in denominator of rate eqns.
@@ -89,4 +99,3 @@ FUNCTION vtrap(x,y) {  :Traps for 0 in denominator of rate eqns.
         }
 }
 UNITSON
-
