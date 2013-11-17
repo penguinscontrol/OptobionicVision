@@ -3,36 +3,34 @@ load_proc("nrnmainmenu")
 
 create soma, axon
 v_init=-65
+tstop=300
 
 soma{
   nseg=1
-  diam=30
-  L=30
+  diam=13.41
+  L=13.41
   Ra=150
   cm=1 
         insert hh
         insert opto2
-   //             flux_opto=.0001
+   //           flux_opto=.0001
                 N_opto2=1
                 kr_opto2=1/3000
-				go1_opto2=100
   }
 
 objectvar stim,stimlit
 
 soma stimlit=new LitClamp(0.5)
 setpointer stimlit.irr(), soma.irr_opto2(0.5)
-stimlit.del=25
-stimlit.dur=75
-stimlit.amp=40
+stimlit.del=50
+stimlit.dur=200
+stimlit.amp=4e10
 
-objectvar voltclamp1
-soma voltclamp1 = new SEClamp(0.5)
-voltclamp1.rs = 1e-30
-voltclamp1.dur1 = tstop
-voltclamp1.amp1 = -100
-
-tstop=125
+objectvar voltclamp2
+soma voltclamp2 = new SEClamp(0.5)
+voltclamp2.rs = 1e-5
+voltclamp2.dur1 = tstop
+voltclamp2.amp1 = -70
 
 objref p, vsoma, vaxon1, vaxon2,vnc2,voltO
 p = new Graph()
@@ -47,7 +45,7 @@ objref p2, m, h,n, p3, cur
 p2 = new Graph()
 p3 = new Graph()
 p2.size(0,tstop,-.1,1.1)
-p3.size(0,tstop,-.01,2)
+p3.size(0,tstop,-.01,0.05)
 m=new Vector()
 h=new Vector()
 n=new Vector()
@@ -72,7 +70,7 @@ vaxon1.label("Nc1")
 vaxon2.label("No1")
 vnc2.label("Nc2")
 voltO.label("No2")
-vsoma.plot(p,dt,2,1)
+//vsoma.plot(p,dt,2,1)
 vaxon1.plot(p,dt,3,1)
 vaxon2.plot(p,dt,7,1)
 vnc2.plot(p,dt)

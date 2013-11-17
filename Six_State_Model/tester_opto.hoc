@@ -5,32 +5,29 @@ load_proc("nrnmainmenu")
 
 dt = 1e-3
 
-tstop = 600
+tstop = 300
 
 create soma, axon
 v_init=-65
 soma{
   nseg=1
-  diam=30
-  L=30
+  diam=13.41
+  L=13.41
   Ra=150
   cm=1
 	insert hh
 	insert opto
-		N_opto = 3e-2
-		gchr2_max_opto = 3.6e-2
 }
 
 axon{
   nseg=1
-  diam=30
-  L=30
+  diam=13.41
+  L=13.41
   Ra=150
+  cm=1
   cm=1
 	insert hh
 	insert opto
-		N_opto = 3e-2
-		gchr2_max_opto = 3.6e-2
   }
 /*
 connect soma(1), axon(0)
@@ -39,29 +36,27 @@ connect soma(1), axon(0)
 objectvar stim
 soma stim = new LitClamp(0.5)
 setpointer stim.irr(), soma.irr_opto(0.5)
-stim.del = 0
-stim.dur = 500
-stim.amp = 3e-2
-
-
+stim.del = 50
+stim.dur = 200
+stim.amp = 4e20
 objectvar stim2
 axon stim2 = new LitClamp(0.01)
 setpointer stim2.irr(),axon.irr_opto(0.1)
 stim2.del = 0
-stim2.dur = 500
+stim2.dur = 50
 stim2.amp = 3e-2
-
-objectvar voltclamp1
-axon voltclamp1 = new SEClamp(0.5)
-voltclamp1.rs = 1e-5
-voltclamp1.dur1 = tstop
-voltclamp1.amp1 = -70
 
 objectvar voltclamp2
 soma voltclamp2 = new SEClamp(0.5)
 voltclamp2.rs = 1e-5
 voltclamp2.dur1 = tstop
 voltclamp2.amp1 = -70
+
+objectvar voltclamp1
+axon voltclamp1 = new SEClamp(0.5)
+voltclamp1.rs = 1e-5
+voltclamp1.dur1 = tstop
+voltclamp1.amp1 = -70
 
 
 /*
@@ -73,23 +68,25 @@ stim3.dur = 1
 stim3.amp = 0
 */
 
-objref p,g,k,l, s3, s1, s4,s6
+objref p,g,k,l, s1, s2, s3, s4, s5, s6
 objref vsoma,lstim,isod,iopt
 objref a_iopt
 objref m,n,h
 //objref aonev,athree,btwo,bfour
 p = new Graph()
-p.size(0,tstop,0,N_opto)
+p.size(0,tstop,0,1)
 g = new Graph()
-g.size(0,tstop,-2e-2,2e-2)
+g.size(0,tstop,0,0.051)
 k = new Graph()
 k.size(0,tstop,-100,50)
 l = new Graph()
 l.size(0,tstop,0,1)
 
-s3 = new Vector()
 s1 = new Vector()
+s2 = new Vector()
+s3 = new Vector()
 s4 = new Vector()
+s5 = new Vector()
 s6 = new Vector()
 
 vsoma = new Vector()
@@ -110,9 +107,11 @@ bfour = new Vector()
 */
 
 s1.record(&soma.s1_opto(.5))
-s4.record(&soma.s4_opto(.5))
-s6.record(&soma.s6_opto(.5))
+s2.record(&soma.s2_opto(.5))
 s3.record(&soma.s3_opto(.5))
+s4.record(&soma.s4_opto(.5))
+s5.record(&soma.s5_opto(.5))
+s6.record(&soma.s6_opto(.5))
 
 vsoma.record(&soma.v(.5))
 lstim.record(&stim.irr)
@@ -127,9 +126,11 @@ run()
 
 vsoma.label("Vsoma")
 s1.label("s1: Close Gnd")
-s4.label("s4: Weak Open")
-s6.label("s6: Close NonGnd")
+s2.label("s2: Cis-Trans")
 s3.label("s3: High Open")
+s4.label("s4: Low Open")
+s5.label("s5: Trans-Cis")
+s6.label("s6: Close NonGnd")
 lstim.label("flux")
 isod.label("Sodium")
 iopt.label("Light Current E0")
@@ -138,15 +139,20 @@ m.label("m")
 n.label("n")
 h.label("h")
 
-s3.plot(p,dt,1,1)
-s4.plot(p,dt,2,1)
-s1.plot(p,dt,3,1)
-s6.plot(p,dt,4,1)
+s1.plot(p,dt,1,1)
+s2.plot(p,dt,2,1)
+s3.plot(p,dt,3,1)
+s4.plot(p,dt,4,1)
+s5.plot(p,dt,5,1)
+s6.plot(p,dt,6,1)
+
 iopt.plot(g,dt,2,1)
 isod.plot(g,dt,3,1)
-a_iopt.plot(g,dt,2,1)
+//a_iopt.plot(g,dt,2,1)
+
 lstim.plot(k,dt,1,1)
 vsoma.plot(k,dt,2,1)
+
 m.plot(l,dt,1,1)
 n.plot(l,dt,2,1)
 h.plot(l,dt,3,1)

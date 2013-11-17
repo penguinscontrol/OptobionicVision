@@ -5,7 +5,7 @@ NEURON {
 	: USEION na WRITE ina
 	RANGE gchr2,gchr2_max,irr,flux
 	RANGE ilit
-	NONSPECIFIC_CURRENT ilit
+	ELECTRODE_CURRENT ilit
 }
 
 UNITS {
@@ -18,12 +18,11 @@ UNITS {
 }
 
 PARAMETER {
-	gchr2_max = 0.036  (S/cm2)
+	gchr2_max = 36e-4  (S/cm2)
 	sigma = 1e-8	(um2)
 	U0    = 43     	(mV)
-	U1    = -4.1    
+	U1    = -4.1
 	gamma = 0.05
-	N = 50
 	e = 0 (mV)
 	a10 = 5 (/ms)
 	a2 = 1 (/ms)
@@ -65,7 +64,7 @@ STATE {
 
 INITIAL{
 	rates()
-	s1=N
+	s1=1
 	s2=0
 	s3=0
 	s4=0
@@ -77,7 +76,7 @@ BREAKPOINT{
 	SOLVE states METHOD sparse
 	gchr2=gchr2_max*fdep()*vdep(v)
 	: ina  = gchr2*(v-e)
-	ilit = -gchr2*(v-e)
+	ilit = gchr2*(v-e)
 }
 
 KINETIC states{
@@ -90,7 +89,7 @@ rates()
 ~ s4 <-> s6 (a4,0)
 ~ s5 <-> s6 (0,b4)
 ~ s6 <-> s1 (a6,0)
-CONSERVE s1+s2+s3+s4+s5+s6 = N
+CONSERVE s1+s2+s3+s4+s5+s6 = 1
 }
 
 PROCEDURE rates() {
