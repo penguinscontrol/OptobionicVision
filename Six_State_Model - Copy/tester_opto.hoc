@@ -5,19 +5,19 @@ load_proc("nrnmainmenu")
 
 dt = 1e-3
 
-tstop = 300
+tstop = 700
 
 create soma, axon
 v_init=-65
 soma{
   nseg=1
-  diam=13.41
-  L=13.41
+  diam=18.97
+  L=18.97
   Ra=150
   cm=1
 	insert hh
-	insert opto
 }
+soma_area = PI*soma.diam*soma.L*1e-4
 
 axon{
   nseg=1
@@ -27,26 +27,28 @@ axon{
   cm=1
   cm=1
 	insert hh
-	insert opto
   }
 /*
 connect soma(1), axon(0)
 */
 
 objectvar stim
-soma stim = new LitClamp(0.5)
-setpointer stim.irr(), soma.irr_opto(0.5)
-stim.del = 50
-stim.dur = 200
-stim.amp = 4e1
+soma stim = new ChR2(0.5)
+stim.irrMag = 1
+stim.delay = 50
+stim.on_dur = 10
+stim.off_dur = 15
+stim.reps = 10
 
 objectvar stim2
-axon stim2 = new LitClamp(0.01)
-setpointer stim2.irr(),axon.irr_opto(0.1)
-stim2.del = 0
-stim2.dur = 50
-stim2.amp = 3e-2
-/*
+axon stim2 = new ChR2(0.5)
+
+stim2.irrMag = 0
+stim2.delay = 50
+stim2.on_dur = 10
+stim2.off_dur = 15
+stim2.reps = 10
+
 objectvar voltclamp2
 soma voltclamp2 = new SEClamp(0.5)
 voltclamp2.rs = 1e-5
@@ -58,7 +60,7 @@ axon voltclamp1 = new SEClamp(0.5)
 voltclamp1.rs = 1e-5
 voltclamp1.dur1 = tstop
 voltclamp1.amp1 = -70
-*/
+
 
 /*
 objectvar stim3
@@ -77,7 +79,7 @@ objref m,n,h
 p = new Graph()
 p.size(0,tstop,0,1)
 g = new Graph()
-g.size(0,tstop,0,0.051)
+g.size(0,tstop,0,2e-8)
 k = new Graph()
 k.size(0,tstop,-100,50)
 l = new Graph()
@@ -107,22 +109,23 @@ btwo = new Vector()
 bfour = new Vector()
 */
 
-s1.record(&soma.s1_opto(.5))
-s2.record(&soma.s2_opto(.5))
-s3.record(&soma.s3_opto(.5))
-s4.record(&soma.s4_opto(.5))
-s5.record(&soma.s5_opto(.5))
-s6.record(&soma.s6_opto(.5))
+s1.record(&stim.s1)
+s2.record(&stim.s2)
+s3.record(&stim.s3)
+s4.record(&stim.s4)
+s5.record(&stim.s5)
+s6.record(&stim.s6)
 
 vsoma.record(&soma.v(.5))
 lstim.record(&stim.irr)
 isod.record(&soma.ina(0.5))
-iopt.record(&soma.ilit_opto(0.5))
-a_iopt.record(&axon.ilit_opto(0.5))
+iopt.record(&stim.ilit)
+a_iopt.record(&stim2.ilit)
 
 m.record(&soma.m_hh(0.5))
 n.record(&soma.n_hh(0.5))
 h.record(&soma.h_hh(0.5))
+
 run()
 
 vsoma.label("Vsoma")
@@ -147,9 +150,10 @@ s4.plot(p,dt,4,1)
 s5.plot(p,dt,5,1)
 s6.plot(p,dt,6,1)
 
+//iopt.mul(soma_area)
 iopt.plot(g,dt,2,1)
 isod.plot(g,dt,3,1)
-//a_iopt.plot(g,dt,2,1)
+a_iopt.plot(g,dt,2,1)
 
 lstim.plot(k,dt,1,1)
 vsoma.plot(k,dt,2,1)
