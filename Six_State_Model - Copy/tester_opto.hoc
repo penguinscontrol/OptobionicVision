@@ -5,7 +5,7 @@ load_proc("nrnmainmenu")
 
 dt = 1e-3
 
-tstop = 700
+tstop = 600
 
 create soma, axon
 v_init=-65
@@ -36,18 +36,18 @@ objectvar stim
 soma stim = new ChR2(0.5)
 stim.irrMag = 1
 stim.delay = 50
-stim.on_dur = 10
-stim.off_dur = 15
-stim.reps = 10
+stim.on_dur = 500
+stim.off_dur = 50
+stim.reps = 1
 
 objectvar stim2
 axon stim2 = new ChR2(0.5)
 
-stim2.irrMag = 0
+stim2.irrMag = 10
 stim2.delay = 50
-stim2.on_dur = 10
-stim2.off_dur = 15
-stim2.reps = 10
+stim2.on_dur = 500
+stim2.off_dur = 50
+stim2.reps = 1
 
 objectvar voltclamp2
 soma voltclamp2 = new SEClamp(0.5)
