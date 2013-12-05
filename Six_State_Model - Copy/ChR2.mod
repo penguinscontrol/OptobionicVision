@@ -19,8 +19,8 @@ UNITS {
 PARAMETER {
 	gchr2_max = 36e-4  (S/cm2)
 	sigma = 1e-8	(um2)
-	U0    = -40     	(mV)
-	U1    = -4.66
+	U0    = 43     	(mV)
+	U1    = -4.1
 	gamma = 0.05
 	e = 0 (mV)
 	a10 = 5 (/ms)
@@ -83,7 +83,6 @@ INITIAL{
 BREAKPOINT{
 	SOLVE states METHOD sparse
 	gchr2=gchr2_max*fdep()*vdep(v)
-	: ina  = gchr2*(v-e)
 	ilit = gchr2*(v-e)
 }
 
@@ -99,6 +98,7 @@ rates()
 ~ s6 <-> s1 (a6,0)
 CONSERVE s1+s2+s3+s4+s5+s6 = 1
 }
+
 NET_RECEIVE (w){
 	if(flag == 1){ : turn on
 	irr = irrMag

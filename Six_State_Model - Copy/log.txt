@@ -1,0 +1,38 @@
+p40
+
+soma stim = new ChR2test(0.5)
+stim.irrMag = 40
+stim.delay = 0
+stim.on_dur = 10
+stim.off_dur = 15
+stim.reps = 9
+a10 = 5e-3 (/ms)
+
+c1
+
+soma stim = new ChR2test(0.5)
+stim.irrMag = 1
+stim.delay = 0
+stim.on_dur = 500
+stim.off_dur = 100
+stim.reps = 9
+a10 = 5e-3 (/ms)
+
+c10
+
+soma stim = new ChR2test(0.5)
+stim.irrMag = 10
+stim.delay = 0
+stim.on_dur = 500
+stim.off_dur = 100
+stim.reps = 9
+a10 = 5e-3 (/ms)
+
+c50
+
+soma stim = new ChR2test(0.5)
+stim.irrMag = 50
+stim.delay = 0
+stim.on_dur = 500
+stim.off_dur = 100
+stim.reps = 9

@@ -3,20 +3,21 @@
 load_file("nrngui.hoc")
 load_proc("nrnmainmenu")
 
-dt = 1e-3
+dt = 1e-3 // 1 microsecond resolution
 
-tstop = 600
+tstop = 600 // how many milliseconds to stimulate
 
 create soma, axon
-v_init=-65
+v_init=70 // V_rest for hodgkin-huxley
 soma{
   nseg=1
-  diam=18.97
+  diam=18.97 // area matches grossman paper
   L=18.97
   Ra=150
   cm=1
 	insert hh
 }
+
 soma_area = PI*soma.diam*soma.L*1e-4
 
 axon{
@@ -33,7 +34,7 @@ connect soma(1), axon(0)
 */
 
 objectvar stim
-soma stim = new ChR2(0.5)
+soma stim = new ChR2test(0.5)
 stim.irrMag = 1
 stim.delay = 50
 stim.on_dur = 500
@@ -41,7 +42,7 @@ stim.off_dur = 50
 stim.reps = 1
 
 objectvar stim2
-axon stim2 = new ChR2(0.5)
+axon stim2 = new ChR2test(0.5)
 
 stim2.irrMag = 10
 stim2.delay = 50
@@ -137,8 +138,8 @@ s5.label("s5: Trans-Cis")
 s6.label("s6: Close NonGnd")
 lstim.label("flux")
 isod.label("Sodium")
-iopt.label("Light Current E0")
-a_iopt.label("Light Current E0x10")
+iopt.label("Light Current som")
+a_iopt.label("Light Current ax")
 m.label("m")
 n.label("n")
 h.label("h")
@@ -153,7 +154,7 @@ s6.plot(p,dt,6,1)
 //iopt.mul(soma_area)
 iopt.plot(g,dt,2,1)
 isod.plot(g,dt,3,1)
-a_iopt.plot(g,dt,2,1)
+a_iopt.plot(g,dt,3,1)
 
 lstim.plot(k,dt,1,1)
 vsoma.plot(k,dt,2,1)
