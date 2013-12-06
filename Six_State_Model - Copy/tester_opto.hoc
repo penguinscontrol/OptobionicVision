@@ -7,11 +7,11 @@ dt = 1e-3 // 1 microsecond resolution
 
 tstop = 600 // how many milliseconds to stimulate
 
-nums = 0
+nums = 10
 if (name_declared("x") == 5){
 	nums = x
 }
-
+print nums
 create soma, axon
 v_init=-65 // V_rest for hodgkin-huxley
 soma{
