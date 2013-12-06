@@ -18,7 +18,7 @@ UNITS {
 
 PARAMETER {
 	gchr2_max = 36e-4  (S/cm2)
-	U0    = -43     	(mV)
+	U0    = 43     	(mV)
 	U1    = -4.1
 	gamma = 0.05
 	e = 0 (mV)

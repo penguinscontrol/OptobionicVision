@@ -7,8 +7,13 @@ dt = 1e-3 // 1 microsecond resolution
 
 tstop = 600 // how many milliseconds to stimulate
 
+nums = 0
+if (name_declared("x") == 5){
+	nums = x
+}
+
 create soma, axon
-v_init=70 // V_rest for hodgkin-huxley
+v_init=-65 // V_rest for hodgkin-huxley
 soma{
   nseg=1
   diam=18.97 // area matches grossman paper
@@ -35,7 +40,7 @@ connect soma(1), axon(0)
 
 objectvar stim
 soma stim = new ChR2test(0.5)
-stim.irrMag = 1
+stim.irrMag = nums
 stim.delay = 50
 stim.on_dur = 500
 stim.off_dur = 50
@@ -44,12 +49,13 @@ stim.reps = 1
 objectvar stim2
 axon stim2 = new ChR2test(0.5)
 
-stim2.irrMag = 10
+stim2.irrMag = 0
 stim2.delay = 50
 stim2.on_dur = 500
 stim2.off_dur = 50
 stim2.reps = 1
 
+/*
 objectvar voltclamp2
 soma voltclamp2 = new SEClamp(0.5)
 voltclamp2.rs = 1e-5
@@ -61,7 +67,7 @@ axon voltclamp1 = new SEClamp(0.5)
 voltclamp1.rs = 1e-5
 voltclamp1.dur1 = tstop
 voltclamp1.amp1 = -70
-
+*/
 
 /*
 objectvar stim3
