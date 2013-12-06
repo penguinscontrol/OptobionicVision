@@ -1,7 +1,7 @@
 : 6 state model of optogenetics
 
 NEURON {
-	POINT_PROCESS ChR2test
+	POINT_PROCESS ChR2test2
 	RANGE gchr2,gchr2_max,irr,flux
 	RANGE ilit,reps,delay,on_dur,off_dur,irrMag
 	ELECTRODE_CURRENT ilit
@@ -18,12 +18,12 @@ UNITS {
 
 PARAMETER {
 	gchr2_max = 36e-4  (S/cm2)
-	U0    = 40     	(mV)
-	U1    = 15 (mV)
+	U0    = 43     	(mV)
+	U1    = -4.1
 	gamma = 0.05
 	e = 0 (mV)
-	a10 = 5e-3 (/ms)
-	a2 = 2e1 (/ms)
+	a10 = 5 (/ms)
+	a2 = 1 (/ms)
 	a30 = 0.022 (/ms)
 	a31 = 0.0135 (/ms)
 	a4 = 0.025 (/ms)
@@ -82,7 +82,7 @@ INITIAL{
 BREAKPOINT{
 	SOLVE states METHOD sparse
 	gchr2=gchr2_max*fdep()*vdep(v)
-	ilit = -gchr2*(v-e)
+	ilit = gchr2*(v-e)
 }
 
 KINETIC states{
@@ -131,16 +131,9 @@ b2 = b20+b21*log(flux/phi_0)
 }
 
 FUNCTION vdep(v (mV)) (){
-LOCAL gate
-gate = (1-exp(-v/U0))/(v/U1)
-if (gate > 1){
-vdep = 1
-}
-if (gate < 1){
-vdep = gate
-}
+: vdep = (1-exp(v/U0))/(U1)
 : vdep = 1
-: vdep = (10.6408-14.6408*exp(-v/42.7671))/v
+vdep = (10.6408-14.6408*exp(-v/42.7671))/v
 }
 
 FUNCTION fdep() (){
