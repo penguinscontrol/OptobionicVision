@@ -1,0 +1,23 @@
+begintemplate passaxon
+
+//public is_art
+public init //, topol, basic_shape, subsets, geom, biophys, geom_nseg, biophys_inhomo
+//public synlist, x, y, z, position, connect2target
+public axon
+public all
+
+
+create axon
+
+proc init() {
+
+axon{
+  nseg=25
+  diam=8
+  L=900
+  Ra=120
+  cm=2
+    insert hh
+  }
+}
+endtemplate passaxon

@@ -1,0 +1,92 @@
+load_file("nrngui.hoc")
+load_proc("nrnmainmenu")
+
+//load the local cell and passing axon templates
+load_file("localcell.hoc")
+load_file("passaxon.hoc")
+
+/*Set Values!*/
+//Choose the number of local cell and passing axons
+N_pa=1
+N_lc=1
+dt= 1e-3
+tstop=200
+v_init=-65
+
+objectvar localc[N_lc],paxon[N_pa]
+
+for i=0, N_lc-1 {
+	localc[i]= new localcell()
+	access localc[i].soma
+	paxon[i] = new passaxon()
+	access paxon[i].axon
+}
+
+/*for i=0, N_pa-1 {
+	paxon[i] = new passaxon()
+	access paxon[i].axon
+}
+*/
+
+//First create the same size stim in an axon and local cell to compare them. :)
+
+func Ltrial(){local stim_val
+	stim_val=(.001)/(1+$1)
+	return stim_val
+}
+
+objectvar stimLC[N_lc]
+objectvar stimPA[N_pa]
+for i=0, N_lc-1 {
+	localc[i].soma stimLC[i] = new ChR2(0.5)
+	stimLC[i].irrMag = Ltrial(i)
+	stimLC[i].delay = 50
+	stimLC[i].on_dur = 50
+	stimLC[i].off_dur = 50
+	stimLC[i].reps = 1
+
+	paxon[i].axon stimPA[i] = new ChR2(0.5)
+	stimPA[i].irrMag = Ltrial(i)
+	stimPA[i].delay = 50
+	stimPA[i].on_dur = 50
+	stimPA[i].off_dur = 50
+	stimPA[i].reps = 1
+}
+
+objref p,g,k,l
+objref vsoma[N_lc],vaxon[N_pa],lstim[N_lc]
+//objref aonev,athree,btwo,bfour
+//p = new Graph()
+//p.size(0,tstop,0,1)
+g = new Graph()
+g.size(0,tstop,-100,100)//0,2e-8)
+//k = new Graph()
+//k.size(0,tstop,-100,50)
+//l = new Graph()
+//l.size(0,tstop,0,1)
+
+for i=0, N_lc-1 {
+vsoma[i] = new Vector()
+vaxon[i] = new Vector()
+lstim[i] = new Vector()
+vsoma[i].record(&localc[i].soma.v(.5))
+vaxon[i].record(&paxon[i].axon.v(.5))
+lstim[i].record(&stimLC[i].ilit)
+}
+
+
+
+
+run()
+	lstim[0].plot(g,dt,1,1)
+	vsoma[0].plot(g,dt,2,1)
+ /*print "running"
+//vsoma.label("Vsoma")
+//lstim.label("flux")
+for i=0, N_lc-1 {
+	print "Start plot"
+	lstim[i].plot(k,dt,1,1)
+	print "Lit Plot"
+	vsoma[i].plot(k,dt,2,1)
+	print "Voltage Plot"
+	}*/

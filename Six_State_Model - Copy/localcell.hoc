@@ -1,0 +1,37 @@
+begintemplate localcell
+
+//public is_art
+public init //, topol, basic_shape, subsets, geom, biophys, geom_nseg, biophys_inhomo
+//public synlist, x, y, z, position, connect2target
+public soma, axon
+public all
+
+
+create soma, axon
+
+proc init() {
+
+soma{
+  nseg=1
+  diam=25
+  L=25
+  Ra=110
+  cm=1 
+	insert pas
+		e_pas=-65
+		g_pas=0.00005
+    insert hh
+  }
+  
+axon{
+  nseg=25
+  diam=8
+  L=900
+  Ra=120
+  cm=2
+    insert hh
+  }
+
+connect soma(1), axon(0)
+}
+endtemplate localcell
