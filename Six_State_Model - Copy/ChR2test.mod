@@ -23,7 +23,7 @@ PARAMETER {
 	gamma = 0.05
 	e = 0 (mV)
 	a10 = 5e-3 (/ms)
-	a2 = 1 (/ms)
+	a2 = 2e1 (/ms)
 	a30 = 0.022 (/ms)
 	a31 = 0.0135 (/ms)
 	a4 = 0.025 (/ms)
