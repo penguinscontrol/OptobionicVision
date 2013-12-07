@@ -18,7 +18,7 @@ soma{
   }
   
 axon{
-  nseg=20
+  nseg=mat_nseg
   diam=8
   L=1000
   Ra=150
@@ -28,10 +28,23 @@ axon{
 
 connect soma(1), axon(0)
 
-double from_mat[3]
-if (name_declared("x")==5) {
-	from_mat = x
-}
+objectvar stim_ax[mat_nseg]
+
+objref irr_file
+irr_file = new File()
+irr_file.ropen("matlab_irrmag_out")
+
+
+for i = 0, mat_nseg-1 {
+
+	axon stim_ax[i] = new ChR2test(0.5)
+	
+	temp_irr_mag = irr_file.scanvar()
+	stim_ax[i].irrMag = temp_irr_mag
+	//print temp_irr_mag
+	
+}  
+
 
 objectvar stim
 soma stim = new ChR2test(0.5)
@@ -41,14 +54,6 @@ stim.on_dur = 500
 stim.off_dur = 50
 stim.reps = 1
 
-objectvar stim2
-axon stim2 = new ChR2test(0.5)
-
-stim2.irrMag = 0
-stim2.delay = 50
-stim2.on_dur = 500
-stim2.off_dur = 50
-stim2.reps = 1
 
 objref p,g,k,l
 objref vsoma,lstim,isod,iopt, s1, s2, s3, s4, s5, s6
