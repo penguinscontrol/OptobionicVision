@@ -23,5 +23,10 @@ hold all;
 plot(data.t(data.lstim > 0),zeros(1,sum(data.lstim > 0)),'r.','MarkerSize',10);
 axis([-10 data.t(end) -0.2 0]);
 
+figure();
+vdep = @(x) (1-exp(-x./40))./(x./15);
+plot(data.t,(data.s3+data.s4.*0.05).*vdep(data.vsoma));
+title('Channel Conductance (relative to max)');
+
 end
 

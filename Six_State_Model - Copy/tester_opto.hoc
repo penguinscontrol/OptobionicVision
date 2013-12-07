@@ -41,8 +41,8 @@ connect soma(1), axon(0)
 
 objectvar stim
 soma stim = new ChR2test(0.5)
-stim.gchr2_max = 10e-4
-stim.irrMag = 5
+stim.gchr2_max = 20e-4
+stim.irrMag = 40
 stim.delay = 50
 stim.on_dur = 500
 stim.off_dur = 50
