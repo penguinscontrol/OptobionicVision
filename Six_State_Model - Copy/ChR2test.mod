@@ -4,7 +4,7 @@ NEURON {
 	POINT_PROCESS ChR2test
 	RANGE gchr2,gchr2_max,irr,flux
 	RANGE ilit,reps,delay,on_dur,off_dur,irrMag
-	ELECTRODE_CURRENT ilit
+	NONSPECIFIC_CURRENT ilit
 }
 
 UNITS {
@@ -82,7 +82,7 @@ INITIAL{
 BREAKPOINT{
 	SOLVE states METHOD sparse
 	gchr2=gchr2_max*fdep()*vdep(v)
-	ilit = -gchr2*(v-e)
+	ilit = gchr2*(v-e)
 }
 
 KINETIC states{

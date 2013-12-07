@@ -28,10 +28,9 @@ soma_area = PI*soma.diam*soma.L*1e-4
 
 axon{
   nseg=1
-  diam=13.41
-  L=13.41
+  diam=18.97 // area matches grossman paper
+  L=18.97
   Ra=150
-  cm=1
   cm=1
 	insert hh
   }
@@ -42,21 +41,19 @@ connect soma(1), axon(0)
 
 objectvar stim
 soma stim = new ChR2test(0.5)
-stim.gchr2_max = 70e-5
-stim.irrMag = 5
+stim.gchr2_max = 200e-4
+stim.irrMag = 5e-1
 stim.delay = 50
 stim.on_dur = 500
 stim.off_dur = 50
 stim.reps = 1
 
 objectvar stim2
-axon stim2 = new ChR2test(0.5)
+axon stim2 = new IClamp(0.5)
 
-stim2.irrMag = 0
-stim2.delay = 50
-stim2.on_dur = 500
-stim2.off_dur = 50
-stim2.reps = 1
+stim2.del = 50
+stim2.dur = 500
+stim2.amp = 0.12
 
 /*
 objectvar voltclamp2
@@ -79,13 +76,17 @@ stim3.dur = 1
 stim3.amp = 0
 */
 
-objref p,g,k,l, s1, s2, s3, s4, s5, s6
-objref vsoma,lstim,isod,iopt
+objref p1,p2,p3,g,k,l, s1, s2, s3, s4, s5, s6
+objref vsoma,lstim,vaxon,iopt
 objref a_iopt
-objref m,n,h
-//objref aonev,athree,btwo,bfour
-//p = new Graph()
-//p.size(0,tstop,0,1)
+objref ms,ns,hs
+objref ma,na,ha
+p1 = new Graph()
+p1.size(0,tstop,0,1)
+p2 = new Graph()
+p2.size(0,tstop,0,1)
+p3 = new Graph()
+p3.size(0,tstop,0,1)
 g = new Graph()
 g.size(0,tstop,0,2e-8)
 k = new Graph()
@@ -102,13 +103,16 @@ s6 = new Vector()
 
 vsoma = new Vector()
 lstim = new Vector()
-isod = new Vector()
+vaxon = new Vector()
 iopt = new Vector()
 a_iopt = new Vector()
 
-m = new Vector()
-n = new Vector()
-h = new Vector()
+ma = new Vector()
+na = new Vector()
+ha = new Vector()
+ms = new Vector()
+ns = new Vector()
+hs = new Vector()
 
 s1.record(&stim.s1)
 s2.record(&stim.s2)
@@ -118,14 +122,17 @@ s5.record(&stim.s5)
 s6.record(&stim.s6)
 
 vsoma.record(&soma.v(.5))
+vaxon.record(&axon.v(.5))
 lstim.record(&stim.irr)
-isod.record(&soma.ina(0.5))
 iopt.record(&stim.ilit)
-a_iopt.record(&stim2.ilit)
+a_iopt.record(&stim2.i)
 
-m.record(&soma.m_hh(0.5))
-n.record(&soma.n_hh(0.5))
-h.record(&soma.h_hh(0.5))
+ma.record(&soma.m_hh(0.5))
+na.record(&soma.n_hh(0.5))
+ha.record(&soma.h_hh(0.5))
+ms.record(&axon.m_hh(0.5))
+ns.record(&axon.n_hh(0.5))
+hs.record(&axon.h_hh(0.5))
 
 run()
 
@@ -137,31 +144,27 @@ s4.label("s4: Low Open")
 s5.label("s5: Trans-Cis")
 s6.label("s6: Close NonGnd")
 lstim.label("flux")
-isod.label("Sodium")
+
+vaxon.label("axon voltage")
 iopt.label("Light Current som")
-a_iopt.label("Light Current ax")
-m.label("m")
-n.label("n")
-h.label("h")
-/*
-s1.plot(p,dt,1,1)
-s2.plot(p,dt,2,1)
-s3.plot(p,dt,3,1)
-s4.plot(p,dt,4,1)
-s5.plot(p,dt,5,1)
-s6.plot(p,dt,6,1)
-*/
-//iopt.mul(soma_area)
+a_iopt.mul(-1)
+a_iopt.label("Electrode Current")
+ma.label("m cur_stim")
+na.label("n cur_stim")
+ha.label("h cur_stim")
+ms.label("m opt_stim")
+ns.label("n opt_stim")
+hs.label("h opt_stim")
 
 iopt.plot(g,dt,2,1)
-isod.plot(g,dt,3,1)
 a_iopt.plot(g,dt,3,1)
 
-lstim.plot(k,dt,1,1)
+vaxon.plot(k,dt,1,1)
 vsoma.plot(k,dt,2,1)
 
-/*
-m.plot(l,dt,1,1)
-n.plot(l,dt,2,1)
-h.plot(l,dt,3,1)
-*/
+ma.plot(p1,dt,1,1)
+na.plot(p2,dt,2,1)
+ha.plot(p3,dt,3,1)
+ms.plot(p1,dt,4,1)
+ns.plot(p2,dt,5,1)
+hs.plot(p3,dt,6,1)
