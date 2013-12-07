@@ -54,7 +54,6 @@ for i = 0, mat_nseg-1 {
 	
 }
 
-
 objectvar stim
 soma stim = new ChR2test(0.5)
 stim.irrMag = 0 //.005
