@@ -33,22 +33,31 @@ objectvar stim_ax[mat_nseg]
 objref irr_file
 irr_file = new File()
 irr_file.ropen("matlab_irrmag_out")
+objref locs_file
+locs_file = new File()
+locs_file.ropen("matlab_chr2locs_out")
 
 
 for i = 0, mat_nseg-1 {
-
-	axon stim_ax[i] = new ChR2test(0.5)
+	temp_locs = locs_file.scanvar()
+	axon stim_ax[i] = new ChR2test(temp_locs)
+	//print temp_locs
 	
 	temp_irr_mag = irr_file.scanvar()
 	stim_ax[i].irrMag = temp_irr_mag
 	//print temp_irr_mag
 	
-}  
+	stim_ax[i].delay = 50
+	stim_ax[i].on_dur = 500
+	stim_ax[i].off_dur = 50
+	stim_ax[i].reps = 1
+	
+}
 
 
 objectvar stim
 soma stim = new ChR2test(0.5)
-stim.irrMag = 40 //.005
+stim.irrMag = 0 //.005
 stim.delay = 50
 stim.on_dur = 500
 stim.off_dur = 50
