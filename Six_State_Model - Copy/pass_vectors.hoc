@@ -1,0 +1,124 @@
+load_file("nrngui.hoc")
+load_proc("nrnmainmenu")
+
+dt= 1e-3
+tstop=600
+
+
+create soma, axon
+v_init=-65
+
+soma{
+  nseg=1
+  diam=25
+  L=25
+  Ra=150
+  cm=1 
+    insert hh
+  }
+  
+axon{
+  nseg=20
+  diam=8
+  L=1000
+  Ra=150
+  cm=1
+    insert hh
+  }
+
+connect soma(1), axon(0)
+
+double from_mat[3]
+if (name_declared("x")==5) {
+	from_mat = x
+}
+
+objectvar stim
+soma stim = new ChR2test(0.5)
+stim.irrMag = 40 //.005
+stim.delay = 50
+stim.on_dur = 500
+stim.off_dur = 50
+stim.reps = 1
+
+objectvar stim2
+axon stim2 = new ChR2test(0.5)
+
+stim2.irrMag = 0
+stim2.delay = 50
+stim2.on_dur = 500
+stim2.off_dur = 50
+stim2.reps = 1
+
+objref p,g,k,l
+objref vsoma,lstim,isod,iopt, s1, s2, s3, s4, s5, s6
+objref vaxon
+
+s1 = new Vector()
+s2 = new Vector()
+s3 = new Vector()
+s4 = new Vector()
+s5 = new Vector()
+s6 = new Vector()
+
+vsoma = new Vector()
+lstim = new Vector()
+isod = new Vector()
+iopt = new Vector()
+
+vaxon = new Vector()
+
+s1.record(&stim.s1)
+s2.record(&stim.s2)
+s3.record(&stim.s3)
+s4.record(&stim.s4)
+s5.record(&stim.s5)
+s6.record(&stim.s6)
+
+vsoma.record(&soma.v(.5))
+lstim.record(&stim.irr)
+isod.record(&soma.ina(0.5))
+iopt.record(&stim.ilit)
+
+vaxon.record(&axon.v(1))
+
+run()
+
+objref fobj
+fobj = new File()
+
+fobj.wopen("s1.dat")
+s1.vwrite(fobj)
+fobj.close()
+fobj.wopen("s2.dat")
+s2.vwrite(fobj)
+fobj.close()
+fobj.wopen("s3.dat")
+s3.vwrite(fobj)
+fobj.close()
+fobj.wopen("s4.dat")
+s4.vwrite(fobj)
+fobj.close()
+fobj.wopen("s5.dat")
+s5.vwrite(fobj)
+fobj.close()
+fobj.wopen("s6.dat")
+s6.vwrite(fobj)
+fobj.close()
+
+fobj.wopen("iopt.dat")
+iopt.vwrite(fobj)
+fobj.close()
+fobj.wopen("isod.dat")
+isod.vwrite(fobj)
+fobj.close()
+
+fobj.wopen("lstim.dat")
+lstim.vwrite(fobj)
+fobj.close()
+fobj.wopen("vsoma.dat")
+vsoma.vwrite(fobj)
+fobj.close()
+fobj.wopen("vaxon.dat")
+vaxon.vwrite(fobj)
+fobj.close()

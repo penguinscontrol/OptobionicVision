@@ -1,0 +1,4 @@
+clear all; clc; close all;
+
+nrncommand = ['C:\nrn73\bin\nrniv.exe -nobanner -c "double x[3]" pass_vectors.hoc -c quit()'];
+dos(nrncommand);

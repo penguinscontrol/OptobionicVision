@@ -33,13 +33,13 @@ stim.on_dur = 500
 stim.off_dur = 100
 stim.reps = 1
 
-
+/*
 objectvar voltclamp
 soma voltclamp = new SEClamp(0.5)
 voltclamp.rs = 1e-5
 voltclamp.dur1 = tstop
 voltclamp.amp1 = 80
-
+*/
 
 objref s1, s2, s3, s4, s5, s6
 objref vsoma,lstim,isod,iopt
