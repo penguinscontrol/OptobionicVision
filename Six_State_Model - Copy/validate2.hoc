@@ -1,0 +1,131 @@
+
+//nrn_load_dll("nrnmech.dll")
+load_file("nrngui.hoc")
+load_proc("nrnmainmenu")
+load_file("localcell.hoc")
+
+dt = 1e-3 // 1 microsecond resolution
+
+tstop = 700 // how many milliseconds to stimulate
+
+objref ganglion
+ganglion = new localcell()
+
+v_init=-70 // V_rest for hodgkin-huxley
+
+nums = 40
+if (name_declared("x") == 5){
+	nums = x
+}
+
+objectvar stim
+ganglion.soma stim = new ChR2test(0.5)
+stim.irrMag =nums //0.34
+stim.delay = 100
+stim.on_dur = 500
+stim.off_dur = 100
+stim.reps = 1
+
+/*
+objectvar voltclamp
+soma voltclamp = new SEClamp(0.5)
+voltclamp.rs = 1e-5
+voltclamp.dur1 = tstop
+voltclamp.amp1 = 80
+*/
+
+objref s1, s2, s3, s4, s5, s6
+objref vsoma,lstim,isod,iopt,vaxon
+objref m,n,h
+
+s1 = new Vector()
+s2 = new Vector()
+s3 = new Vector()
+s4 = new Vector()
+s5 = new Vector()
+s6 = new Vector()
+
+vsoma = new Vector()
+lstim = new Vector()
+isod = new Vector()
+iopt = new Vector()
+
+m = new Vector()
+n = new Vector()
+h = new Vector()
+
+vaxon = new Vector()
+
+s1.record(&stim.s1)
+s2.record(&stim.s2)
+s3.record(&stim.s3)
+s4.record(&stim.s4)
+s5.record(&stim.s5)
+s6.record(&stim.s6)
+
+vsoma.record(&ganglion.soma.v(.5))
+lstim.record(&stim.irr)
+isod.record(&ganglion.soma.ina(0.5))
+
+iopt.record(&stim.ilit)
+
+m.record(&ganglion.soma.m_hh(0.5))
+n.record(&ganglion.soma.n_hh(0.5))
+h.record(&ganglion.soma.h_hh(0.5))
+
+vaxon.record(&ganglion.axon.v(1))
+
+run()
+
+objref fobj
+fobj = new File()
+
+/*
+fobj.wopen("s1.dat")
+s1.vwrite(fobj)
+fobj.close()
+fobj.wopen("s2.dat")
+s2.vwrite(fobj)
+fobj.close()
+fobj.wopen("s3.dat")
+s3.vwrite(fobj)
+fobj.close()
+fobj.wopen("s4.dat")
+s4.vwrite(fobj)
+fobj.close()
+fobj.wopen("s5.dat")
+s5.vwrite(fobj)
+fobj.close()
+fobj.wopen("s6.dat")
+s6.vwrite(fobj)
+fobj.close()
+
+fobj.wopen("iopt.dat")
+iopt.vwrite(fobj)
+fobj.close()
+fobj.wopen("isod.dat")
+isod.vwrite(fobj)
+fobj.close()
+*/
+
+fobj.wopen("lstim.dat")
+lstim.vwrite(fobj)
+fobj.close()
+fobj.wopen("vsoma.dat")
+vsoma.vwrite(fobj)
+fobj.close()
+fobj.wopen("vaxon.dat")
+vaxon.vwrite(fobj)
+fobj.close()
+
+/*
+fobj.wopen("m.dat")
+m.vwrite(fobj)
+fobj.close()
+fobj.wopen("n.dat")
+n.vwrite(fobj)
+fobj.close()
+fobj.wopen("h.dat")
+h.vwrite(fobj)
+fobj.close()
+*/

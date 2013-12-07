@@ -1,0 +1,228 @@
+
+//nrn_load_dll("nrnmech.dll")
+load_file("nrngui.hoc")
+load_proc("nrnmainmenu")
+load_file("localcell.hoc")
+
+dt = 5e-2 // 1 microsecond resolution
+
+tstop = 500 // how many milliseconds to stimulate
+
+objref ganglion
+ganglion = new localcell()
+
+v_init=-65 // V_rest for hodgkin-huxley
+
+objectvar stim[24]
+
+objref irr_file
+irr_file = new File()
+irr_file.ropen("matlab_irrmag_out")
+objref locs_file
+locs_file = new File()
+locs_file.ropen("matlab_chr2locs_out")
+objref expr_file
+expr_file = new File()
+expr_file.ropen("matlab_expr_out")
+
+del = 100
+on = 300
+off = 100
+rep = 1
+//expression = 36e-4
+	
+temp_locs = locs_file.scanvar()
+//print temp_locs
+temp_irr_mag = irr_file.scanvar()
+//print temp_irr_mag
+temp_expr = expr_file.scanvar()
+
+/*
+ganglion.soma stim[0] = new ChR2test(temp_locs)
+
+stim[0].irrMag = temp_irr_mag //0.34
+stim[0].delay = del
+stim[0].on_dur = on
+stim[0].off_dur = off
+stim[0].reps = rep
+stim[0].gchr2_max = temp_expr*/
+
+ganglion.soma stim[0] = new IClamp(temp_locs)
+stim[0].del = del
+stim[0].dur = on
+stim[0].amp = 0.06
+
+temp_locs = locs_file.scanvar()
+//print temp_locs
+temp_irr_mag = irr_file.scanvar()
+//print temp_irr_mag
+temp_expr = expr_file.scanvar()
+
+ganglion.init_seg stim[1] = new ChR2test(temp_locs)
+
+stim[1].irrMag = temp_irr_mag //0.34
+stim[1].delay = del
+stim[1].on_dur = on
+stim[1].off_dur = off
+stim[1].reps = rep
+stim[1].gchr2_max = temp_expr
+
+
+for i = 2, 3 {
+	temp_locs = locs_file.scanvar()
+	ganglion.thin_seg stim[i] = new ChR2test(temp_locs)
+	//print temp_locs
+	temp_expr = expr_file.scanvar()
+	
+	temp_irr_mag = irr_file.scanvar()
+	stim[i].irrMag = temp_irr_mag
+	//print temp_irr_mag
+	
+	stim[i].delay = del
+	stim[i].on_dur = on
+	stim[i].off_dur = off
+	stim[i].reps = rep
+	stim[i].gchr2_max = temp_expr
+}
+
+for i = 4, 23 {
+	temp_locs = locs_file.scanvar()
+	ganglion.axon stim[i] = new ChR2test(temp_locs)
+	//print temp_locs
+	
+	temp_irr_mag = irr_file.scanvar()
+	stim[i].irrMag = temp_irr_mag
+	//print temp_irr_mag
+	temp_expr = expr_file.scanvar()
+	
+	stim[i].delay = del
+	stim[i].on_dur = on
+	stim[i].off_dur = off
+	stim[i].reps = rep
+	stim[i].gchr2_max = temp_expr
+}
+
+objref p,g,k,l
+objref vsoma,lstim,isod,iopt, s1, s2, s3, s4, s5, s6
+objref vaxon
+
+s1 = new Vector()
+s2 = new Vector()
+s3 = new Vector()
+s4 = new Vector()
+s5 = new Vector()
+s6 = new Vector()
+
+vsoma = new Vector()
+lstim = new Vector()
+isod = new Vector()
+iopt = new Vector()
+
+vaxon = new Vector()
+/*
+s1.record(&stim[0].s1)
+s2.record(&stim[0].s2)
+s3.record(&stim[0].s3)
+s4.record(&stim[0].s4)
+s5.record(&stim[0].s5)
+s6.record(&stim[0].s6)
+*/
+
+vsoma.record(&ganglion.soma.v(.5))
+//lstim.record(&stim[0].irr)
+isod.record(&ganglion.soma.ina(0.5))
+//iopt.record(&stim[0].ilit)
+
+vaxon.record(&ganglion.axon.v(1))
+
+//run()
+
+objref fobj
+fobj = new File()
+
+/*
+fobj.wopen("s1.dat")
+s1.vwrite(fobj)
+fobj.close()
+fobj.wopen("s2.dat")
+s2.vwrite(fobj)
+fobj.close()
+fobj.wopen("s3.dat")
+s3.vwrite(fobj)
+fobj.close()
+fobj.wopen("s4.dat")
+s4.vwrite(fobj)
+fobj.close()
+fobj.wopen("s5.dat")
+s5.vwrite(fobj)
+fobj.close()
+fobj.wopen("s6.dat")
+s6.vwrite(fobj)
+fobj.close()
+*/
+
+/*
+fobj.wopen("iopt.dat")
+iopt.vwrite(fobj)
+fobj.close()
+fobj.wopen("isod.dat")
+isod.vwrite(fobj)
+fobj.close()
+*/
+
+fobj.wopen("lstim.dat")
+lstim.vwrite(fobj)
+fobj.close()
+fobj.wopen("vsoma.dat")
+vsoma.vwrite(fobj)
+fobj.close()
+fobj.wopen("vaxon.dat")
+vaxon.vwrite(fobj)
+fobj.close()
+
+
+//p = new Graph()
+//p.size(0,tstop,0,1)
+/*
+g = new Graph()
+g.size(0,tstop,0,2e-8)
+k = new Graph()
+k.size(0,tstop,-100,50)
+l = new Graph()
+l.size(0,tstop,0,1)
+*/
+/*
+vsoma.label("Vsoma")
+vaxon.label("Vaxon")
+s1.label("s1: Close Gnd")
+s2.label("s2: Cis-Trans")
+s3.label("s3: High Open")
+s4.label("s4: Low Open")
+s5.label("s5: Trans-Cis")
+s6.label("s6: Close NonGnd")
+lstim.label("flux")
+isod.label("Sodium")
+iopt.label("Light Current soma")
+*/
+/*
+s1.plot(p,dt,1,1)
+s2.plot(p,dt,2,1)
+s3.plot(p,dt,3,1)
+s4.plot(p,dt,4,1)
+s5.plot(p,dt,5,1)
+s6.plot(p,dt,6,1)
+*/
+//iopt.mul(soma_area)
+/*
+iopt.plot(g,dt,2,1)
+isod.plot(g,dt,3,1)
+
+lstim.plot(k,dt,1,1)
+vsoma.plot(k,dt,2,1)
+vaxon.plot(k,dt,3,1)
+*/
+/*
+m.plot(l,dt,1,1)
+n.plot(l,dt,2,1)
+h.plot(l,dt,3,1)
+*/

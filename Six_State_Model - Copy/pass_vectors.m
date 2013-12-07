@@ -1,11 +1,16 @@
 clear all; clc; close all;
 
-nseg = 20;
-irrmags = [1:nseg].*40;
+ax_nseg = 20;
+
+irrmags = [0 0 0 0 [1:ax_nseg].*0];
+irrmags(1) = 0;
 dlmwrite('matlab_irrmag_out',irrmags,' ');
 
-chr2locs = [1:nseg]./nseg-1./(2.*nseg);
+chr2locs = [ 0.5 0.5 0.2 0.8 [1:ax_nseg]./ax_nseg-1./(2.*ax_nseg)];
 dlmwrite('matlab_chr2locs_out',chr2locs,' ');
 
-nrncommand = ['C:\nrn73\bin\nrniv.exe -nobanner -c mat_nseg="' sprintf('%f',nseg) '" pass_vectors.hoc -c quit()'];
-dos(nrncommand);
+expressionlevels = [0 0 0 0 [1:ax_nseg].^0.*0];
+dlmwrite('matlab_expr_out',expressionlevels,' ');
+
+% nrncommand = ['C:\nrn73\bin\nrniv.exe -nobanner -c "x=5" pass_vectors_test.hoc -c quit()'];
+% dos(nrncommand);

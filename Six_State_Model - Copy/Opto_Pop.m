@@ -2,7 +2,7 @@ close all; clear
 
 cell=@(x,y) rectangle('Curvature',[1,1],'Position',[x y 30 30]);
 
-N_cell=5; %67 %input('Number of Cells per row?');
+N_cell=15; %67 %input('Number of Cells per row?');
 
 %%Create a grid of the pixels
 figure; hold on
@@ -32,7 +32,7 @@ axis([-1000 1000 -1000 1000])
 % irrad=zeros(size(h,1)*size(h,2),1);
 % irrad(sample)=.05;
 
-value=linspace(.1,10,N_cell^2);
+value=linspace(.01,10,N_cell^2);
 for n=1:(N_cell^2)
     set(h(n),'FaceColor',[n/(N_cell^2) 1 1])
     irrad(n)=value(n);
@@ -41,13 +41,15 @@ end
 retina=struct();
 fails=0;
 good=0
+nseg = 20;
 for n=1:length(irrad)
     if (irrad(n)~=0) 
         %sprintf('Here')
-        neuronfile=['C:\nrn73w64\bin64\nrniv.exe -nobanner -c "x=' sprintf('%f',irrad(n)) '" validate.hoc -c quit()'] %localcellopto.hoc -c quit()'];
+        
+        neuronfile=['C:\nrn73\bin\nrniv.exe -nobanner -c "x=' sprintf('%f',irrad(n)) '" validate2.hoc -c quit()'] %localcellopto.hoc -c quit()'];
         dos(neuronfile);
         retina(n).cells=importNeuron();
-        if (find(retina(n).cells.vsoma(10:end)>0))
+        if (find(retina(n).cells.vaxon(10:end)>0))
             set(somas(n),'FaceColor',[.9 .5 .9])
             good=irrad(n);
         else

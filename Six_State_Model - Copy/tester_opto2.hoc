@@ -1,0 +1,167 @@
+
+//nrn_load_dll("nrnmech.dll")
+load_file("nrngui.hoc")
+load_proc("nrnmainmenu")
+
+dt = 1e-3 // 1 microsecond resolution
+
+tstop = 600 // how many milliseconds to stimulate
+
+nums = 40
+if (name_declared("x") == 5){
+	nums = x
+}
+print nums
+create soma, axon
+v_init= -65 // V_rest for hodgkin-huxley
+
+soma{
+  nseg=1
+  diam=18.97 // area matches grossman paper
+  L=18.97
+  Ra=150
+  cm=1
+	insert hh
+}
+
+soma_area = PI*soma.diam*soma.L*1e-4
+
+axon{
+  nseg=1
+  diam=13.41
+  L=13.41
+  Ra=150
+  cm=1
+  cm=1
+	insert hh
+  }
+
+/*
+connect soma(1), axon(0)
+*/
+
+objectvar stim
+soma stim = new ChR2test(0.5)
+stim.gchr2_max = 70e-5
+stim.irrMag = 5
+stim.delay = 50
+stim.on_dur = 500
+stim.off_dur = 50
+stim.reps = 1
+
+objectvar stim2
+axon stim2 = new ChR2test(0.5)
+
+stim2.irrMag = 0
+stim2.delay = 50
+stim2.on_dur = 500
+stim2.off_dur = 50
+stim2.reps = 1
+
+/*
+objectvar voltclamp2
+soma voltclamp2 = new SEClamp(0.5)
+voltclamp2.rs = 1e-5
+voltclamp2.dur1 = tstop
+voltclamp2.amp1 = 70
+
+objectvar voltclamp1
+axon voltclamp1 = new SEClamp(0.5)
+voltclamp1.rs = 1e-5
+voltclamp1.dur1 = tstop
+voltclamp1.amp1 = 70
+
+objectvar stim3
+axon stim3 = new LitClamp(0.99)
+setpointer stim3.irr(),axon.irr_opto(0.99)
+stim3.del = 0
+stim3.dur = 1
+stim3.amp = 0
+*/
+
+objref p,g,k,l, s1, s2, s3, s4, s5, s6
+objref vsoma,lstim,isod,iopt
+objref a_iopt
+objref m,n,h
+//objref aonev,athree,btwo,bfour
+//p = new Graph()
+//p.size(0,tstop,0,1)
+g = new Graph()
+g.size(0,tstop,0,2e-8)
+k = new Graph()
+k.size(0,tstop,-100,50)
+l = new Graph()
+l.size(0,tstop,0,1)
+
+s1 = new Vector()
+s2 = new Vector()
+s3 = new Vector()
+s4 = new Vector()
+s5 = new Vector()
+s6 = new Vector()
+
+vsoma = new Vector()
+lstim = new Vector()
+isod = new Vector()
+iopt = new Vector()
+a_iopt = new Vector()
+
+m = new Vector()
+n = new Vector()
+h = new Vector()
+
+s1.record(&stim.s1)
+s2.record(&stim.s2)
+s3.record(&stim.s3)
+s4.record(&stim.s4)
+s5.record(&stim.s5)
+s6.record(&stim.s6)
+
+vsoma.record(&soma.v(.5))
+lstim.record(&stim.irr)
+isod.record(&soma.ina(0.5))
+iopt.record(&stim.ilit)
+a_iopt.record(&stim2.ilit)
+
+m.record(&soma.m_hh(0.5))
+n.record(&soma.n_hh(0.5))
+h.record(&soma.h_hh(0.5))
+
+run()
+
+vsoma.label("Vsoma")
+s1.label("s1: Close Gnd")
+s2.label("s2: Cis-Trans")
+s3.label("s3: High Open")
+s4.label("s4: Low Open")
+s5.label("s5: Trans-Cis")
+s6.label("s6: Close NonGnd")
+lstim.label("flux")
+isod.label("Sodium")
+iopt.label("Light Current som")
+a_iopt.label("Light Current ax")
+m.label("m")
+n.label("n")
+h.label("h")
+/*
+s1.plot(p,dt,1,1)
+s2.plot(p,dt,2,1)
+s3.plot(p,dt,3,1)
+s4.plot(p,dt,4,1)
+s5.plot(p,dt,5,1)
+s6.plot(p,dt,6,1)
+*/
+//iopt.mul(soma_area)
+
+iopt.plot(g,dt,2,1)
+isod.plot(g,dt,3,1)
+a_iopt.plot(g,dt,3,1)
+
+lstim.plot(k,dt,1,1)
+vsoma.plot(k,dt,2,1)
+
+/*
+m.plot(l,dt,1,1)
+n.plot(l,dt,2,1)
+h.plot(l,dt,3,1)
+*/
