@@ -4,16 +4,21 @@ load_file("nrngui.hoc")
 load_proc("nrnmainmenu")
 load_file("localcell.hoc")
 
+nums = 20
+if (name_declared("mat_nseg") == 5){
+	nums = mat_nseg
+}
+
 dt = 5e-2 // 1 microsecond resolution
 
 tstop = 500 // how many milliseconds to stimulate
 
 objref ganglion
 ganglion = new localcell()
-
+ganglion.axon.nseg = nums
 v_init=-65 // V_rest for hodgkin-huxley
 
-objectvar stim[24]
+objectvar stim[nums+4]
 
 objref irr_file
 irr_file = new File()
@@ -37,7 +42,7 @@ temp_irr_mag = irr_file.scanvar()
 //print temp_irr_mag
 temp_expr = expr_file.scanvar()
 
-/*
+
 ganglion.soma stim[0] = new ChR2test(temp_locs)
 
 stim[0].irrMag = temp_irr_mag //0.34
@@ -45,12 +50,14 @@ stim[0].delay = del
 stim[0].on_dur = on
 stim[0].off_dur = off
 stim[0].reps = rep
-stim[0].gchr2_max = temp_expr*/
+stim[0].gchr2_max = temp_expr
 
+/*
 ganglion.soma stim[0] = new IClamp(temp_locs)
 stim[0].del = del
 stim[0].dur = on
-stim[0].amp = 0.06
+stim[0].amp = 0.03
+*/
 
 temp_locs = locs_file.scanvar()
 //print temp_locs
@@ -85,10 +92,10 @@ for i = 2, 3 {
 	stim[i].gchr2_max = temp_expr
 }
 
-for i = 4, 23 {
+for i = 4, nums+3 {
 	temp_locs = locs_file.scanvar()
 	ganglion.axon stim[i] = new ChR2test(temp_locs)
-	//print temp_locs
+	print temp_locs
 	
 	temp_irr_mag = irr_file.scanvar()
 	stim[i].irrMag = temp_irr_mag
