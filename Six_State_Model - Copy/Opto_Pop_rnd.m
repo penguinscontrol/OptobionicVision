@@ -17,10 +17,8 @@ end
 posC = randi([-1000 1000-30],N_cell,2);
 %%This create a equally spaced 
 pos=linspace(-1000,1000-30,N_cell);
-for k=1:N_cell
-    for l=1:N_cell
-        somas(k,l)=cell(pos(k),pos(l));
-    end
+for k=1:N_cell^2
+        somas(k,l)=cell(posC(k,1),posC(k,2));
 end
 
 axis([-1000 1000 -1000 1000])
@@ -46,6 +44,7 @@ nseg = 20;
 for n=1:length(irrad)
     if (irrad(n)~=0) 
         %sprintf('Here')
+        [irrmags, chr2locs, expr]
         neuronfile=['C:\nrn73\bin\nrniv.exe -nobanner -c "x=' sprintf('%f',irrad(n)) '" validate2.hoc -c quit()'] %localcellopto.hoc -c quit()'];
         dos(neuronfile);
         retina(n).cells=importNeuron();
