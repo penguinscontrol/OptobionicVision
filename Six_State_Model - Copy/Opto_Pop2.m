@@ -32,7 +32,9 @@ end
 posC=randi([gridmin gridmax-diam],N_cell,2);
 for n=1:N_cell
     somas(n)=cell(posC(n,1),posC(n,2));
-    axons(n)=line([posC(n,1)+diam gridmax],[posC(n,2) posC(n,2)],'Color',[.9 .1 .9]);
+    if N_cell<50
+        axons(n)=line([posC(n,1)+diam gridmax],[posC(n,2) posC(n,2)],'Color',[.9 .1 .9]);
+    end
 end
 
 axis([gridmin gridmax gridmin gridmax])
@@ -46,30 +48,56 @@ axis([gridmin gridmax gridmin gridmax])
 % irrad(sample)=.05;
 
 value=linspace(.1,10,N_pixel^2);
+exprvalue = linspace(1e-4, 1e-2, N_pixel^2);
 for n=1:(N_pixel^2)
     set(h(n),'FaceColor',[n/(N_pixel^2) 1 1])
     irrad(n)=value(n);
+    expr(n) = exprvalue(n);
 end
  
 %%Send the information to neuron
 retina=struct();
 
-for n=1:3 %N_cells
+for n=1:N_cell
     %soma
-    [irrSoma locSoma]=findirrad(diam,1,posC(n,:),irrad,posP,N_pixel);
+    [irrSoma, exprSoma, locSoma]=findirrad(diam,1,posC(n,:),irrad,expr,posP,N_pixel);
     %inital segment
-    [irrIN locIN]=findirrad(diam,1,[posC(n,1)+diam,posC(n,2)],irrad,posP,N_pixel);
+    [irrIN, exprIN, locIN]=findirrad(diam,1,[posC(n,1)+diam,posC(n,2)],irrad,expr,posP,N_pixel);
     %Thin Segment
-    [irrThin locThin]=findirrad(60,2,[posC(n,1)+diam+30,posC(n,2)],irrad,posP,N_pixel);
+    [irrThin, exprThin, locThin]=findirrad(60,2,[posC(n,1)+diam+30,posC(n,2)],irrad,expr,posP,N_pixel);
     %Axon Segment
     axonL=gridmax-diam-90-posC(n,1);
-    nseg=20;
-    [irrmags chr2locs]=findirrad(axonL,nseg,[posC(n,1)+90+diam,posC(n,2)],irrad,posP,N_pixel);
-%     dlmwrite('matlab_irrmag_out',irrmags,' ');
-%     dlmwrite('matlab_chr2locs_out',chr2locs,' ');   
-%     nrncommand = ['C:\nrn73w64\bin64\nrniv.exe -nobanner -c mat_nseg="' sprintf('%f',nseg) '" pass_vectors.hoc -c quit()'];
-%     dos(nrncommand);
-%     retina(n).cells=importNeuron();    
+    nseg = floor(axonL/50);
+    [irrmags, exprlevs, chr2locs]=findirrad(axonL,nseg,[posC(n,1)+90+diam,posC(n,2)],irrad,expr,posP,N_pixel);
+    
+    irrmags = [irrSoma irrIN irrThin irrmags];
+    chr2locs = [locSoma locIN locThin chr2locs];
+    exprlevs = [exprSoma exprIN exprThin exprlevs];
+    tot_nseg = length(irrmags);
+    
+    dlmwrite('matlab_irrmag_out',irrmags,' ');
+    dlmwrite('matlab_chr2locs_out',chr2locs,' ');
+    dlmwrite('matlab_expr_out',exprlevs,' ');
+    nrncommand = ['C:\nrn73\bin\nrniv.exe -nobanner -c "mat_nseg='...
+        sprintf('%f',tot_nseg)...
+        '" locals_pop.hoc -c quit()'];
+    dos(nrncommand);
+    retina(n).cells=importNeuron();
+         if (find(retina(n).cells.vsoma(10:end)>0))
+             set(somas(n),'FaceColor',[.9 .5 .9])
+             good=irrad(n);
+         else
+            set(somas(n),'FaceColor',[.9 .9 .5])
+             fails=fails+1;
+             bad=irrad(n);
+         end    
+end
+
+figure;
+numplots = ceil(sqrt(N_cell));
+for a = 1:length(retina)
+    subplot(numplots,numplots,a);
+    plot(retina(a).cells.vaxon);
 end
 % %%Send the information to neuron
 % retina=struct();
