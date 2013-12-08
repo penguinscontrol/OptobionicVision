@@ -9,6 +9,7 @@ N_pixel=5; %pixels per row %67 %input('Number of Cells per row?');
 N_cell=30; %total number of cells
 
 %%Create a grid of the pixels
+%Erinn was here
 figure; hold on
 posP=linspace(gridmin,gridmax,N_pixel+1);
 whp=0;
