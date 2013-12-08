@@ -1,0 +1,93 @@
+begintemplate localcell
+
+//public is_art
+public init //, topol, basic_shape, subsets, geom, biophys, geom_nseg, biophys_inhomo
+//public synlist, x, y, z, position, connect2target
+public soma, axon, init_seg, thin_seg
+public all
+
+create soma, axon, init_seg, thin_seg
+
+proc init() {
+
+soma{
+  nseg=1
+  diam=25
+  L=25
+  Ra=110
+  cm=1 
+	insert pas
+		e_pas = -70
+		g_pas = 20e-6
+    insert hh
+		gnabar_hh = 120e-3
+		gkbar_hh = 36e-3
+		gl_hh = 3e-4
+		
+		el_hh = -54.3
+		ena_hh = 50
+		ek_hh = -77
+  }
+  
+init_seg{
+  nseg=1
+  diam=0.7
+  L=30
+  Ra=110
+  cm=1 
+	insert pas
+		e_pas = -70
+		g_pas = 20e-6
+    insert hh
+		gnabar_hh = 120e-3
+		gkbar_hh = 36e-3
+		gl_hh = 3e-4
+		
+		el_hh = -54.3
+		ena_hh = 50
+		ek_hh = -77
+  }
+  
+  thin_seg{
+  nseg=2
+  diam=0.5
+  L=60
+  Ra=110
+  cm=1 
+	insert pas
+		e_pas = -70
+		g_pas = 20e-6
+    insert hh
+		gnabar_hh = 120e-3
+		gkbar_hh = 36e-3
+		gl_hh = 3e-4
+		
+		el_hh = -54.3
+		ena_hh = 50
+		ek_hh = -77  
+  }
+  
+  axon{
+  nseg=20
+  diam=0.9
+  L=1000
+  Ra=110
+  cm=1 
+	insert pas
+		e_pas = -70
+		g_pas = 20e-6
+    insert hh
+		gnabar_hh = 120e-3
+		gkbar_hh = 36e-3
+		gl_hh = 3e-4
+		
+		el_hh = -54.3
+		ena_hh = 50
+		ek_hh = -77
+  }
+
+connect soma(1), init_seg(0)
+connect init_seg(1), thin_seg(0)
+connect thin_seg(1), axon(0)
+}
+endtemplate localcell

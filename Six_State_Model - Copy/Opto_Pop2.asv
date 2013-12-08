@@ -50,13 +50,13 @@ axis([gridmin gridmax gridmin gridmax])
 % irrad=zeros(size(h,1)*size(h,2),1);
 % irrad(sample)=.05;
 
-value=linspace(50,50,N_pixel^2);
-exprvalue = linspace(36e-5,36e-3,N_pixel^2);%ones(1,N_pixel^2).*36e-4;
+value=linspace(0.05,0.05,N_pixel^2);
+exprvalue = linspace(1e-3,1e-1,N_pixel^2);%ones(1,N_pixel^2).*36e-4;
 %exprvalue = linspace(1e-4, 1e-2, N_pixel^2);
 for n=1:(N_pixel^2)
-    set(h(n),'FaceColor',[n/(N_pixel^2) 1 1]);
+    set(h(n),'FaceColor',[n/(N_pixel^2) 1 1])
+    text(sprintf('%f',irrad(n)));
     irrad(n)=value(n);
-    text(posC(n,1)-100,posC(n,2)+100,sprintf('%f',exprvalue(n)));
     expr(n) = exprvalue(n);
 end
  pause(5e-4);
@@ -96,7 +96,7 @@ for n=1:N_cell
         '" locals_pop.hoc -c quit()'];
     dos(nrncommand);
     retina(n).cells=importNeuron();
-         if (find(retina(n).cells.vsoma(10:end)>0))
+         if (find(retina(n).cells.vsoma(20:end)>0))
              set(somas(n),'FaceColor','r')
              
             %good=irrad(n);
@@ -112,7 +112,7 @@ figure;
 numplots = ceil(sqrt(N_cell));
 for a = 1:length(retina)
     subplot(numplots,numplots,a);
-    plot(retina(a).cells.vsoma);
+    plot(retina(a).cells.vaxon);
     title(sprintf('%f',retina(a).expr));
 end
 % %%Send the information to neuron
