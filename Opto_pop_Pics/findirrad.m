@@ -10,8 +10,8 @@ yAll = xAll;
 %     nseg=nseg+1;
 % end
 for n=1:nseg; %ceil(nseg/2)   
-    x=find(posP<=posC(1)+halfway*(1+2*(n-1)),1,'last');
-    y=find(posP<=posC(2),1,'last');
+    y=find(posP<=posC(1)+halfway*(1+2*(n-1)),1,'last');
+    x=find(fliplr(posP)>=posC(2),1,'last');
 %    posC(1)+halfway*(1+2*(n-1))
 %      if(posP(x(end))==posP(end))
 %          x=x-1;
@@ -19,15 +19,16 @@ for n=1:nseg; %ceil(nseg/2)
     xAll(n)=x;
     yAll(n)=y;
     
-    point=xAll(n)+N_pixel*(yAll(n)-1);
-    if point>length(irrad)
-        irrmags(n)=0;
-    else
-        irrmags(n)=irrad(point);
-    end
-    irrmags(n)
+%     point=xAll(n)+N_pixel*(yAll(n)-1);
+%     if point>length(irrad)
+%         irrmags(n)=0;
+%     else
+%         irrmags(n)=irrad(point);
+%     end
+    irrmags(n) = irrad(x,y);
+    %irrmags(n)
     if find(posP==posC(1)+halfway*(1+2*(n-1)));% & posP(end)~=posC(1)+halfway*(1+2*(n-1))
-        irrmags(n)=mean(irrad(point:point+1));
+        irrmags(n)=mean(irrad(x:(x+1),y));
     end
 end
 
