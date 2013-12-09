@@ -1,13 +1,13 @@
 close all; clear
 diam=30;
 
-N_pixel=3; %total number of cells
+N_pixel=20; %total number of cells
 
 %% Create a grid of the pixels
 figure; hold on
-value=linspace(.05,25,N_pixel);
+irrvalue=linspace(.05,25,N_pixel);
 exprvalue = linspace(1e-5,2e-2,N_pixel);%ones(1,N_pixel^2).*36e-4;
-[irrad, expr] = meshgrid(value,exprvalue);
+[irrad, expr] = meshgrid(irrvalue,exprvalue);
 
 %% Generate the grid
 posP = 0:N_pixel;
@@ -24,13 +24,20 @@ N_cell=N_pixel^2;
 
 
 axis([0 N_pixel 0 N_pixel]);
+set(gca,'XTick',posP);
+set(gca,'XTickLabel',irrvalue);
+set(gca,'XTick',posP);
+set(gca,'YTickLabel',exprvalue);
+xlabel('Irradiances');
+ylabel('Expression Levels');
 retina=struct();
 
 for n=1:N_cell
     
-    irrmags = [irrSoma irrIN irrThin irrmags];
-    chr2locs = [locSoma locIN locThin chr2locs];
-    exprlevs = [exprvalue(n) zeros(1,length(irrIN)) zeros(1,length(irrThin)) zeros(1,length(irrmags))];
+    nseg = 30;
+    chr2locs = [0.5 0.5 0.2 0.8 [1:nseg]./nseg-1./(2.*nseg)];
+    irrmags = [irrad(n) zeros(1,length(chr2locs)-1)];
+    exprlevs = [expr(n) zeros(1,length(chr2locs)-1)];
     tot_nseg = length(irrmags);
     
     dlmwrite('matlab_irrmag_out',irrmags,' ');
@@ -44,9 +51,9 @@ for n=1:N_cell
     fprintf('Expression was %f',exprlevs(1));
     retina(n).cells=importNeuron();
          if (find(retina(n).cells.vsoma(10:end)>0))
-             set(somas(n),'FaceColor','r')
+             set(h(n),'FaceColor','r')
          else
-            set(somas(n),'FaceColor',[.9 .9 .5])
+            set(h(n),'FaceColor',[.9 .9 .5])
          end
     retina(n).expr = exprlevs(1);
     
