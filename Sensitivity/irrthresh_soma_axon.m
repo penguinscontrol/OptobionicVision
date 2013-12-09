@@ -25,7 +25,7 @@ normIrr=max(max(irrad));
 w=mean(diff(posP));
 exprvalue = linspace(1e-2,1e-2,N_pixel^2);
 
-chr2locs =@(nseg) [1:nseg]./nseg-1./(2.*nseg);
+chr2locats =@(nseg) [1:nseg]./nseg-1./(2.*nseg);
 %% One cell per pixel
  for k=1:N_pixel.^2
         h(k)=rectangle('Position',[gridx(k) gridy(k) w,w],'EdgeColor','b');
@@ -34,11 +34,11 @@ chr2locs =@(nseg) [1:nseg]./nseg-1./(2.*nseg);
         posC(k,2)=gridy(k)+w./2;
         
         set(h(k),'FaceColor',irrad(k)/normIrr*[1 1 1]);
-        axonL=gridmax-diam-90-posC(k,1);
+        axonL=w-w/2-diam/2-90;
         nseg = ceil(axonL/500);
         irrmags=[irrad(k) 0 [0 0], zeros(1, nseg)];
-        exprlevs=[exprvalue(k) 0 [0 0], zeros(1,nseg)];
-        chr2locs=[.5 .5 chr2locs(2) chr2locs(nseg)];
+        exprlevs=exprvalue(k)*[1 1 [1 1], ones(1,nseg)];
+        chr2locs=[.5 .5 chr2locats(2) chr2locats(nseg)];
         tot_nseg = length(irrmags);
         
         dlmwrite('matlab_irrmag_out',irrmags,' ');
