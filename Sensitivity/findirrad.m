@@ -1,4 +1,4 @@
-function[irrmags, chr2locs]=findirrad(lengthC,nseg,posC,irrad,posP,N_pixel)
+function[irrmags, expressions, chr2locs]=findirrad(lengthC,nseg,posC,irrad,expr,posP,N_pixel)
 
 halfway=lengthC/(2*nseg);
 
@@ -16,8 +16,8 @@ for n=1:nseg; %ceil(nseg/2)
 %      if(posP(x(end))==posP(end))
 %          x=x-1;
 %      end
-    xAll(n)=x;
-    yAll(n)=y;
+%     xAll(n)=x;
+%     yAll(n)=y;
     
 %     point=xAll(n)+N_pixel*(yAll(n)-1);
 %     if point>length(irrad)
@@ -26,9 +26,11 @@ for n=1:nseg; %ceil(nseg/2)
 %         irrmags(n)=irrad(point);
 %     end
     irrmags(n) = irrad(x,y);
+    expressions(n) = expr(x,y);
     %irrmags(n)
     if find(posP==posC(1)+halfway*(1+2*(n-1)));% & posP(end)~=posC(1)+halfway*(1+2*(n-1))
         irrmags(n)=mean(irrad(x:(x+1),y));
+        expressions(n) = mean(expr(x:(x+1),y));
     end
 end
 

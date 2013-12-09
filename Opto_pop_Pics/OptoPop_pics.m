@@ -6,34 +6,49 @@ cell=@(x,y) rectangle('Curvature',[1,1],'Position',[x y diam*drawD diam*drawD]);
 gridmin=-12e3;
 gridmax=12e3;
 %N_pixel=5; %pixels per row %67 %input('Number of Cells per row?');
-N_cell=100; %total number of cells
+N_cell=10; %total number of cells
 
 %% Create a grid of the pixels
 figure; hold on
 irrad=ImageProcess('DukeLogo.jpg',15);
+% irrad = [1 0 0;...
+%     1 0 0;...
+%     1 1 0];
 N_pixel=length(irrad);
 
-
+figure();
 %% Generate the grid
-posP=linspace(gridmin,gridmax,N_pixel);
-[gridx,gridy] = meshgrid(posP,posP);
-[addrx,addry] = meshgrid([1:N_pixel]);
-
+posP=linspace(gridmin,gridmax,N_pixel+1);
+[gridx,gridy] = meshgrid(posP(1:(end-1)),flipud(posP(1:(end-1))));
+gridy = flipud(gridy);
 normIrr=max(max(irrad));
-
 w=mean(diff(posP));
- for k=1:N_pixel.^2
-         h(addrx(k),addry(k))=rectangle('Position',[gridx(k) gridy(k) w,w],'EdgeColor','b');
-        somas(addrx(k),addry(k))=cell(gridx(k)+w./2,gridy(k)+w/2);
-        posC(k,1)=gridx(k);
-        posC(k,2)=gridy(k);
-        
-        set(h(addrx(k),addry(k)),'FaceColor',irrad(k)/normIrr*[1 1 1]);
- end
-N_cell=N_pixel^2;
-exprvalue = linspace(1e-1,1e-1,N_pixel^2);
+exprvalue = linspace(1e-2,1e-2,N_pixel^2);
+% %% One cell per pixel
+%  for k=1:N_pixel.^2
+%         h(k)=rectangle('Position',[gridx(k) gridy(k) w,w],'EdgeColor','b');
+%         somas(k)=cell(gridx(k)+w./2,gridy(k)+w/2);
+%         posC(k,1)=gridx(k)+w./2;
+%         posC(k,2)=gridy(k)+w./2;
+%         
+%         set(h(k),'FaceColor',irrad(k)/normIrr*[1 1 1]);
+%  end
+% N_cell=N_pixel^2;
 
-axis([gridmin gridmax gridmin gridmax])
+%% Randomized cell positions
+
+posC=randi([gridmin gridmax-diam],N_cell,2);
+ for k=1:N_pixel.^2
+        h(k)=rectangle('Position',[gridx(k) gridy(k) w,w],'EdgeColor','b');
+        set(h(k),'FaceColor',irrad(k)/normIrr*[1 1 1]);
+ end
+ for k=1:N_cell
+     somas(k)=cell(posC(k,1),posC(k,2));
+ end
+exprvalue = linspace(1e-2,1e-2,N_pixel^2);
+
+axis([gridmin gridmax gridmin gridmax]);
+
 % %%This creates uniform randomly spaced cells
 % posC=randi([gridmin gridmax-diam],N_cell,2);
 % for n=1:N_cell
@@ -65,27 +80,25 @@ retina=struct();
 
 for n=1:N_cell
     %soma
-    [irrSoma, exprSoma, locSoma]=findirrad(diam,1,posC(n,:),irrad,expr,posP,N_pixel);
+    [irrSoma, locSoma]=findirrad(diam,1,posC(n,:),irrad,posP,N_pixel);
     %inital segment
-    [irrIN, exprIN, locIN]=findirrad(diam,1,[posC(n,1)+diam,posC(n,2)],irrad,expr,posP,N_pixel);
+    [irrIN, locIN]=findirrad(diam,1,[posC(n,1)+diam,posC(n,2)],irrad,posP,N_pixel);
     %Thin Segment
-    [irrThin, exprThin, locThin]=findirrad(60,2,[posC(n,1)+diam+30,posC(n,2)],irrad,expr,posP,N_pixel);
+    [irrThin, locThin]=findirrad(60,2,[posC(n,1)+diam+30,posC(n,2)],irrad,posP,N_pixel);
     %Axon Segment
     axonL=gridmax-diam-90-posC(n,1);
     nseg = ceil(axonL/500);
     if axonL > 0
-        [irrmags, exprlevs, chr2locs]=findirrad(axonL,nseg,[posC(n,1)+90+diam,posC(n,2)],irrad,expr,posP,N_pixel);
+        [irrmags, chr2locs]=findirrad(axonL,nseg,[posC(n,1)+90+diam,posC(n,2)],irrad,posP,N_pixel);
     else
         irrmags = 0;
-        exprlevs = 0;
         chr2locs = 0.5;
         nseg = 1;
     end
     
-    
     irrmags = [irrSoma irrIN irrThin irrmags];
     chr2locs = [locSoma locIN locThin chr2locs];
-    exprlevs = [exprvalue(n) zeros(1,length(exprIN)) zeros(1,length(exprThin)) zeros(1,length(exprlevs))];
+    exprlevs = [exprvalue(n) zeros(1,length(irrIN)) zeros(1,length(irrThin)) zeros(1,length(irrmags))];
     tot_nseg = length(irrmags);
     
     dlmwrite('matlab_irrmag_out',irrmags,' ');
@@ -95,6 +108,7 @@ for n=1:N_cell
         sprintf('%f',tot_nseg)...
         '" locals_pop.hoc -c quit()'];
     dos(nrncommand);
+    fprintf('Irradiance was %f \n', irrmags(1));
     fprintf('Expression was %f',exprlevs(1));
     retina(n).cells=importNeuron();
          if (find(retina(n).cells.vsoma(10:end)>0))
@@ -102,7 +116,10 @@ for n=1:N_cell
          else
             set(somas(n),'FaceColor',[.9 .9 .5])
          end
-    retina(n).expr = exprSoma;
+    retina(n).expr = exprlevs(1);
+    
+    irrmags = [];
+    chr2locs = [];
 end
 
 figure;

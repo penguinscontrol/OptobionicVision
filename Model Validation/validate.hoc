@@ -171,7 +171,7 @@ iopt.record(&stim[0].ilit)
 timevec.record(&t)
 
 run()
-iopt.mul(soma_area)
+//iopt.mul(soma_area)
 
 objref fobj
 fobj = new File()
