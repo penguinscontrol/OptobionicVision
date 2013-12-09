@@ -24,6 +24,8 @@ gridy = flipud(gridy);
 normIrr=max(max(irrad));
 w=mean(diff(posP));
 exprvalue = linspace(1e-2,1e-2,N_pixel^2);
+
+chr2locs =@(nseg) [1:nseg]./nseg-1./(2.*nseg);
 %% One cell per pixel
  for k=1:N_pixel.^2
         h(k)=rectangle('Position',[gridx(k) gridy(k) w,w],'EdgeColor','b');
@@ -32,6 +34,14 @@ exprvalue = linspace(1e-2,1e-2,N_pixel^2);
         posC(k,2)=gridy(k)+w./2;
         
         set(h(k),'FaceColor',irrad(k)/normIrr*[1 1 1]);
+        axonL=gridmax-diam-90-posC(k,1);
+        nseg = ceil(axonL/500);
+        irrmags=[irrad(n) 0 [0 0], zeros(1, nseg)];
+        exprlevs=[exprvalue(n) 0 [0 0], zeros(1,nseg)];
+        chr2locs=[.5 .5 chr2locs(2) chr2locs(nseg)];
+        tot_nseg = length(irrmags);
+        
+        
  end
 N_cell=N_pixel^2;
 
@@ -79,12 +89,4 @@ for n=1:N_cell
     
     irrmags = [];
     chr2locs = [];
-end
-
-figure;
-numplots = ceil(sqrt(N_cell));
-for a = 1:length(retina)
-    subplot(numplots,numplots,a);
-    plot(retina(a).cells.vsoma);
-    title(sprintf('%f',retina(a).expr));
 end
