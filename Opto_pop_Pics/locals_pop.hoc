@@ -53,6 +53,7 @@ stim[0].off_dur = off
 stim[0].reps = rep
 stim[0].gchr2_max = temp_expr
 print "Soma expressing ", temp_expr
+print "Soma exposed to ", temp_irr_mag
 /*
 ganglion.soma stim[0] = new IClamp(temp_locs)
 stim[0].del = del
