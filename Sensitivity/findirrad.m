@@ -16,8 +16,8 @@ for n=1:nseg; %ceil(nseg/2)
 %      if(posP(x(end))==posP(end))
 %          x=x-1;
 %      end
-    xAll(n)=x;
-    yAll(n)=y;
+%     xAll(n)=x;
+%     yAll(n)=y;
     
 %     point=xAll(n)+N_pixel*(yAll(n)-1);
 %     if point>length(irrad)
