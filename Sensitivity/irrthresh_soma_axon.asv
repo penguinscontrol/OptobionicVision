@@ -80,3 +80,11 @@ for n=1:N_cell
     irrmags = [];
     chr2locs = [];
 end
+
+figure;
+numplots = ceil(sqrt(N_cell));
+for a = 1:length(retina)
+    subplot(numplots,numplots,a);
+    plot(retina(a).cells.vsoma);
+    title(sprintf('%f',retina(a).expr));
+end
