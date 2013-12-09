@@ -5,7 +5,7 @@ cell=@(x,y) rectangle('Curvature',[1,1],'Position',[x y diam*drawD diam*drawD]);
 
 gridmin=-1000;
 gridmax=1000;
-N_pixel=10; %pixels per row %67 %input('Number of Cells per row?');
+N_pixel=67; %pixels per row %67 %input('Number of Cells per row?');
 N_cell=30; %total number of cells
 
 %%Create a grid of the pixels
@@ -62,6 +62,9 @@ for n=1:(N_pixel^2)
     %text(posC(n,1)-100,posC(n,2)+100,sprintf('%f',exprvalue(n)));
     expr(n) = expressions(n);
 end
+set(gca,'XTickLabel',sprintf('%f|',value));
+set(gca,'YTick',posP,'XTick',posP);
+set(gca,'YTickLabel',sprintf('%f|',exprvalue));
  pause(5e-4);
 %%Send the information to neuron
 retina=struct();

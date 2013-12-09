@@ -62,6 +62,9 @@ for n=1:(N_pixel^2)
     %text(posC(n,1)-100,posC(n,2)+100,sprintf('%f',exprvalue(n)));
     expr(n) = expressions(n);
 end
+set(gca,'XTickLabel',sprintf('%f|',value));
+set(gca,'YTick',posP,'XTick',posP);
+set(gca,'YTickLabel',sprintf('%f|',exprvalue));
  pause(5e-4);
 %%Send the information to neuron
 retina=struct();

@@ -86,8 +86,9 @@ init_seg{
 		ek_hh = -77
   }
 
-connect soma(1), init_seg(0)
+/*connect soma(1), init_seg(0)
 connect init_seg(1), thin_seg(0)
 connect thin_seg(1), axon(0)
+*/
 }
 endtemplate localcell

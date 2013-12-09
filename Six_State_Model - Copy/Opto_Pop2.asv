@@ -51,16 +51,14 @@ axis([gridmin gridmax gridmin gridmax])
 % irrad=zeros(size(h,1)*size(h,2),1);
 % irrad(sample)=.05;
 
-value=linspace(.05,40,N_pixel);
-exprvalue = linspace(1e-5,1e0,N_pixel);%ones(1,N_pixel^2).*36e-4;
-[irradiances, expressions] = meshgrid(value,exprvalue);
-
+value=linspace(.05,.05,N_pixel^2);
+exprvalue = linspace(1e-4,1e0,N_pixel^2);%ones(1,N_pixel^2).*36e-4;
 %exprvalue = linspace(1e-4, 1e-2, N_pixel^2);
 for n=1:(N_pixel^2)
     set(h(n),'FaceColor',[n/(N_pixel^2) 1 1]);
-    irrad(n)=irradiances(n);
-    %text(posC(n,1)-100,posC(n,2)+100,sprintf('%f',exprvalue(n)));
-    expr(n) = expressions(n);
+    irrad(n)=value(n);
+    text(posC(n,1)-100,posC(n,2)+100,sprintf('%f',exprvalue(n)));
+    expr(n) = exprvalue(n);
 end
  pause(5e-4);
 %%Send the information to neuron
@@ -100,11 +98,9 @@ for n=1:N_cell
     dos(nrncommand);
     retina(n).cells=importNeuron();
          if (find(retina(n).cells.vsoma(15:end)>0))
-             if (length(find(retina(n).cells.vsoma(15:end)>0))>75)
-                set(somas(n),'FaceColor','g')
-             else
-                set(somas(n),'FaceColor','r')
-             end
+             if (length(find(retina(n).cells.vsoma(15:end)>0)
+             set(somas(n),'FaceColor','r')
+             
             %good=irrad(n);
          else
             set(somas(n),'FaceColor',[.9 .9 .5])
