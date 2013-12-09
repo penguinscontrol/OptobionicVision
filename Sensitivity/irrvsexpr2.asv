@@ -28,9 +28,10 @@ retina=struct();
 
 for n=1:N_cell
     
-    irrmags = [irrSoma irrIN irrThin irrmags];
-    chr2locs = [locSoma locIN locThin chr2locs];
-    exprlevs = [exprvalue(n) zeros(1,length(irrIN)) zeros(1,length(irrThin)) zeros(1,length(irrmags))];
+    nseg = 
+    irrmags = [];
+    chr2locs = [0.5 0.5 0.2 0.8 [1:nseg]./nseg-1./(2.*nseg)];
+    exprlevs = [];
     tot_nseg = length(irrmags);
     
     dlmwrite('matlab_irrmag_out',irrmags,' ');
