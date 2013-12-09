@@ -3,44 +3,47 @@ diam=30;
 drawD=1;
 cell=@(x,y) rectangle('Curvature',[1,1],'Position',[x y diam*drawD diam*drawD]);
 
-gridmin=-12000;
-gridmax=12000;
+gridmin=-500;
+gridmax=500;
 %N_pixel=5; %pixels per row %67 %input('Number of Cells per row?');
-N_cell=30; %total number of cells
+N_cell=200; %total number of cells
 
 %%Create a grid of the pixels
 figure; hold on
-irrad=ImageProcess('Grill.jpg',20);
-% posP=linspace(gridmin,gridmax,N_pixel+1);
-% whp=0;
-% for k=1:N_pixel
-%     for l=1:N_pixel
-%         w=mean(diff(posP));
-%         h(k,l)=rectangle('Position',[posP(k) posP(l) w,w],'EdgeColor','b');
-%         whp=whp+1;
-%         b(k,l)=whp;
-%     end
-% end
+irrad=ImageProcess('DukeLogo.jpg',15);
+N_pixel=length(irrad);
 
-% %%This create a equally spaced cells
-% pos=linspace(gridmin,gridmax-diam,N_pixel);
-% for k=1:N_pixel
-%     for l=1:N_pixel
-%         somas(k,l)=cell(pos(k),pos(l));
-%         posC(k+N_pixel*(l-1),:)=[pos(k),pos(l)];
-%     end
-% end
-% N_cell=N_pixel^2;
-
-%%This creates uniform randomly spaced cells
-posC=randi([gridmin gridmax-diam],N_cell,2);
-for n=1:N_cell
-    somas(n)=cell(posC(n,1),posC(n,2));
-    if N_cell<50
-        axons(n)=line([posC(n,1)+diam gridmax],[posC(n,2) posC(n,2)],'Color',[.9 .1 .9]);
+ posP=linspace(gridmin,gridmax,N_pixel+1);
+ whp=0;
+ for k=1:N_pixel
+     for l=1:N_pixel
+         w=mean(diff(posP));
+         h(k,l)=rectangle('Position',[posP(k) posP(l) w,w],'EdgeColor','b');
+         whp=whp+1;
+         b(k,l)=whp;
+     end
+ end
+ 
+%pause
+%%This create a equally spaced cells
+pos=linspace(gridmin,gridmax-diam,N_pixel);
+for k=1:N_pixel
+    for l=1:N_pixel
+        somas(k,l)=cell(pos(k),pos(l));
+        posC(k+N_pixel*(l-1),:)=[pos(k),pos(l)];
     end
 end
+N_cell=N_pixel^2;
 
+% %%This creates uniform randomly spaced cells
+% posC=randi([gridmin gridmax-diam],N_cell,2);
+% for n=1:N_cell
+%     somas(n)=cell(posC(n,1),posC(n,2));
+%     if N_cell<50
+%         axons(n)=line([posC(n,1)+diam gridmax],[posC(n,2) posC(n,2)],'Color',[.9 .1 .9]);
+%     end
+% end
+pause(1e-4)
 axis([gridmin gridmax gridmin gridmax])
 
 %%Create stimulation irradiance values
@@ -52,14 +55,15 @@ axis([gridmin gridmax gridmin gridmax])
 % irrad(sample)=.05;
 
 % value=linspace(50,50,N_pixel^2);
-exprvalue = linspace(36e-5,36e-3,N_pixel^2);%ones(1,N_pixel^2).*36e-4;
+exprvalue = linspace(1e-2,1e-2,N_pixel^2);%ones(1,N_pixel^2).*36e-4;
 %exprvalue = linspace(1e-4, 1e-2, N_pixel^2);
-% for n=1:(N_pixel^2)
-%     set(h(n),'FaceColor',[n/(N_pixel^2) 1 1]);
+normIrr=max(max(irrad));
+ for n=1:(N_pixel^2)
+    set(h(n),'FaceColor',irrad(n)/normIrr*[1 1 1]);
 %     irrad(n)=value(n);
 %     text(posC(n,1)-100,posC(n,2)+100,sprintf('%f',exprvalue(n)));
-%     expr(n) = exprvalue(n);
-% end
+     expr(n) = exprvalue(n);
+ end
 %  pause(5e-4);
 %%Send the information to neuron
 retina=struct();

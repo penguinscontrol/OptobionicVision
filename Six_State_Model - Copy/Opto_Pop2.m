@@ -51,7 +51,7 @@ axis([gridmin gridmax gridmin gridmax])
 % irrad=zeros(size(h,1)*size(h,2),1);
 % irrad(sample)=.05;
 
-value=linspace(50,50,N_pixel^2);
+value=linspace(.1,.1,N_pixel^2);
 exprvalue = linspace(36e-5,36e-3,N_pixel^2);%ones(1,N_pixel^2).*36e-4;
 %exprvalue = linspace(1e-4, 1e-2, N_pixel^2);
 for n=1:(N_pixel^2)
