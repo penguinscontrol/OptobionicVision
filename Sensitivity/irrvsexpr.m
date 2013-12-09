@@ -51,16 +51,11 @@ axis([gridmin gridmax gridmin gridmax])
 % irrad=zeros(size(h,1)*size(h,2),1);
 % irrad(sample)=.05;
 
-value=linspace(.05,40,N_pixel);
-exprvalue = linspace(1e-5,2e-2,N_pixel);%ones(1,N_pixel^2).*36e-4;
-[irradiances, expressions] = meshgrid(value,exprvalue);
 
 %exprvalue = linspace(1e-4, 1e-2, N_pixel^2);
 for n=1:(N_pixel^2)
     set(h(n),'FaceColor',[n/(N_pixel^2) 1 1]);
-    irrad(n)=irradiances(n);
     %text(posC(n,1)-100,posC(n,2)+100,sprintf('%f',exprvalue(n)));
-    expr(n) = expressions(n);
 end
 set(gca,'XTickLabel',sprintf('%f|',value));
 set(gca,'YTick',posP,'XTick',posP);
