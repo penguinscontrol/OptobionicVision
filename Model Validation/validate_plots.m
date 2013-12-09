@@ -25,14 +25,14 @@ end
 legend('Dark adapted ground','trans-cis','High conductance open',...
     'Weak conductance open','cis-trans','Close (non-ground)',0);
 
-savefig('validate1');
+% savefig('validate1');
 %% Compare Photocurrents
 % One plot
 figure()
 plot(retina(1).t,retina(1).iopt);
 hold on;
 plot(retina(2).t,retina(2).iopt);
-savefig('validate2');
+% savefig('validate2');
 % Second plot
 
 irrs = [1 10 50 100];
@@ -59,7 +59,7 @@ for a = 1:nums
    axis([-0.05.*retina(nums).t(end) retina(nums).t(end) 1.1.*min(retina(nums).iopt) 0]); 
 end
 
-savefig('validate3');
+% savefig('validate3');
 
 %% Validate voltage dependent inward rectification
 
@@ -74,7 +74,7 @@ for a = 1:nums
 hold all;
 end
 
-savefig('validate4');
+% savefig('validate4');
 
 %% Validate pulsed
 irrs = 40;
@@ -83,7 +83,7 @@ vcl = -70;
 retina = validate(irrs,expr,vcl,'validate_pulsed.hoc');
 figure();
 plot(retina.t,retina.iopt);
-savefig('validate5');
+% savefig('validate5');
 
 %% Currents compare
 
@@ -115,4 +115,4 @@ axis([175 180 1.1.*min(retina.iopt(retina.t > 175 & retina.t < 180).*10)...
     1.1*max(retina.ipot(retina.t > 175 & retina.t < 180))]);
 hold all;
 
-savefig('validate6');
+% savefig('validate6');
