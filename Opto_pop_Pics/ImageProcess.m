@@ -204,13 +204,14 @@ irr = irr_pixel./(1000/pixel_dim)^2;
 % imagesc(irr);
 % colorbar;
 
-%% Image Transformation (Invert and Flip)
-result = zeros(pixel_dim,pixel_dim);
-for k = 1:pixel_dim
-    for l = 1:pixel_dim
-        result(k,l) = irr(pixel_dim+1-k,pixel_dim+1-l);
-    end
-end
+% %% Image Transformation (Invert and Flip)
+% result = zeros(pixel_dim,pixel_dim);
+% for k = 1:pixel_dim
+%     for l = 1:pixel_dim
+%         result(k,l) = irr(pixel_dim+1-k,pixel_dim+1-l);
+%     end
+% end
+result = irr;
 imagesc(result)
 colormap gray
 colorbar

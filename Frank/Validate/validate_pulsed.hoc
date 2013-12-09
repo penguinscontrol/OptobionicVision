@@ -1,0 +1,212 @@
+
+//nrn_load_dll("nrnmech.dll")
+load_file("nrngui.hoc")
+load_proc("nrnmainmenu")
+load_file("localcell.hoc")
+dt = 5e-2
+
+tstop = 250 // how many milliseconds to stimulate
+
+v_init=-65 // V_rest for hodgkin-huxley
+
+nums = 20
+if (name_declared("mat_nseg") == 5){
+	nums = mat_nseg
+}
+
+objref ganglion
+ganglion = new localcell()
+ganglion.axon.nseg = nums
+soma_area = PI*ganglion.soma.diam*ganglion.soma.L*1e-4
+
+objectvar stim[nums+4]
+del = 0
+on = 10
+off = 15
+rep = 9
+
+objref irr_file
+irr_file = new File()
+irr_file.ropen("matlab_irrmag_out")
+objref locs_file
+locs_file = new File()
+locs_file.ropen("matlab_chr2locs_out")
+objref expr_file
+expr_file = new File()
+expr_file.ropen("matlab_expr_out")
+objref vcl_file
+vcl_file = new File()
+vcl_file.ropen("matlab_vcl_out")
+
+objectvar voltclamp[nums+4]
+series_r = 1e-5
+vdur1 = tstop
+vamp1 = vcl_file.scanvar()
+print vamp1
+clamping = 1
+
+	
+temp_locs = locs_file.scanvar()
+//print temp_locs
+temp_irr_mag = irr_file.scanvar()
+//print temp_irr_mag
+temp_expr = expr_file.scanvar()
+
+
+ganglion.soma stim[0] = new ChR2(temp_locs)
+
+if (clamping){
+ganglion.soma voltclamp[0] = new SEClamp(temp_locs)
+voltclamp[0].rs = series_r
+voltclamp[0].dur1 = tstop
+voltclamp[0].amp1 = vamp1
+}
+
+stim[0].irrMag = temp_irr_mag //0.34
+stim[0].delay = del
+stim[0].on_dur = on
+stim[0].off_dur = off
+stim[0].reps = rep
+stim[0].gchr2_max = temp_expr
+
+temp_locs = locs_file.scanvar()
+//print temp_locs
+temp_irr_mag = irr_file.scanvar()
+//print temp_irr_mag
+temp_expr = expr_file.scanvar()
+
+ganglion.init_seg stim[1] = new ChR2(temp_locs)
+
+if (clamping){
+ganglion.init_seg voltclamp[1] = new SEClamp(temp_locs)
+voltclamp[1].rs = series_r
+voltclamp[1].dur1 = tstop
+voltclamp[1].amp1 = vamp1
+}
+
+stim[1].irrMag = temp_irr_mag //0.34
+stim[1].delay = del
+stim[1].on_dur = on
+stim[1].off_dur = off
+stim[1].reps = rep
+stim[1].gchr2_max = temp_expr
+
+
+for i = 2, 3 {
+	temp_locs = locs_file.scanvar()
+	ganglion.thin_seg stim[i] = new ChR2(temp_locs)
+	
+	if (clamping){
+	ganglion.thin_seg voltclamp[i] = new SEClamp(temp_locs)
+	voltclamp[i].rs = series_r
+	voltclamp[i].dur1 = tstop
+	voltclamp[i].amp1 = vamp1
+	}
+
+	//print temp_locs
+	temp_expr = expr_file.scanvar()
+	
+	temp_irr_mag = irr_file.scanvar()
+	stim[i].irrMag = temp_irr_mag
+	//print temp_irr_mag
+	
+	stim[i].delay = del
+	stim[i].on_dur = on
+	stim[i].off_dur = off
+	stim[i].reps = rep
+	stim[i].gchr2_max = temp_expr
+}
+
+for i = 4, nums-1 {
+	temp_locs = locs_file.scanvar()
+	ganglion.axon stim[i] = new ChR2(temp_locs)
+	
+	if (clamping){
+	ganglion.axon voltclamp[i] = new SEClamp(temp_locs)
+	voltclamp[i].rs = series_r
+	voltclamp[i].dur1 = tstop
+	voltclamp[i].amp1 = vamp1
+	}
+	print temp_locs
+	
+	temp_irr_mag = irr_file.scanvar()
+	stim[i].irrMag = temp_irr_mag
+	//print temp_irr_mag
+	temp_expr = expr_file.scanvar()
+	
+	stim[i].delay = del
+	stim[i].on_dur = on
+	stim[i].off_dur = off
+	stim[i].reps = rep
+	stim[i].gchr2_max = temp_expr
+}
+
+objref s1, s2, s3, s4, s5, s6
+s1 = new Vector()
+s2 = new Vector()
+s3 = new Vector()
+s4 = new Vector()
+s5 = new Vector()
+s6 = new Vector()
+s1.record(&stim[0].s1)
+s2.record(&stim[0].s2)
+s3.record(&stim[0].s3)
+s4.record(&stim[0].s4)
+s5.record(&stim[0].s5)
+s6.record(&stim[0].s6)
+
+objref vaxon, vsoma
+vsoma = new Vector()
+vaxon = new Vector()
+vsoma.record(&ganglion.soma.v(.5))
+vaxon.record(&ganglion.axon.v(1))
+
+
+objref lstim,iopt,timevec
+lstim = new Vector()
+iopt = new Vector()
+timevec = new Vector()
+lstim.record(&stim[0].irr)
+iopt.record(&stim[0].ilit)
+timevec.record(&t)
+
+run()
+iopt.mul(soma_area)
+
+objref fobj
+fobj = new File()
+
+fobj.wopen("s1.dat")
+s1.vwrite(fobj)
+fobj.close()
+fobj.wopen("s2.dat")
+s2.vwrite(fobj)
+fobj.close()
+fobj.wopen("s3.dat")
+s3.vwrite(fobj)
+fobj.close()
+fobj.wopen("s4.dat")
+s4.vwrite(fobj)
+fobj.close()
+fobj.wopen("s5.dat")
+s5.vwrite(fobj)
+fobj.close()
+fobj.wopen("s6.dat")
+s6.vwrite(fobj)
+fobj.close()
+
+fobj.wopen("iopt.dat")
+iopt.vwrite(fobj)
+fobj.close()
+fobj.wopen("lstim.dat")
+lstim.vwrite(fobj)
+fobj.close()
+fobj.wopen("vsoma.dat")
+vsoma.vwrite(fobj)
+fobj.close()
+fobj.wopen("vaxon.dat")
+vaxon.vwrite(fobj)
+fobj.close()
+fobj.wopen("t.dat")
+timevec.vwrite(fobj)
+fobj.close()
