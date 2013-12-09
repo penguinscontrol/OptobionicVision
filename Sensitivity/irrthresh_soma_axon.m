@@ -36,7 +36,7 @@ chr2locats =@(nseg) [1:nseg]./nseg-1./(2.*nseg);
         set(h(k),'FaceColor',irrad(k)/normIrr*[1 1 1]);
         axonL=w-w/2-diam/2-90;
         nseg = ceil(axonL/500);
-        irrmags=[irrad(k) 0 [0 0], zeros(1, nseg)];
+        irrmags=irrad(k)*[1 1 [1 1], ones(1, nseg)];
         exprlevs=exprvalue(k)*[1 1 [1 1], ones(1,nseg)];
         chr2locs=[.5 .5 chr2locats(2) chr2locats(nseg)];
         tot_nseg = length(irrmags);
