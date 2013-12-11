@@ -17,7 +17,7 @@ objref ganglion
 ganglion = new localcell()
 print "nums = ", nums
 ganglion.axon.nseg = nums-4
-ganglion.axon.L = (nums-4).*50
+ganglion.axon.L = (nums-4)*50
 v_init=-65 // V_rest for hodgkin-huxley
 
 objectvar stim[nums]

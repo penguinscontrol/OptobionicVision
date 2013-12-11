@@ -23,28 +23,30 @@ posP=linspace(gridmin,gridmax,N_pixel+1);
 gridy = flipud(gridy);
 normIrr=max(max(irrad));
 w=mean(diff(posP));
-exprvalue = 0.000036;
-%% One cell per pixel
- for k=1:N_pixel.^2
-        h(k)=rectangle('Position',[gridx(k) gridy(k) w,w],'EdgeColor','b');
-        somas(k)=cell(gridx(k)+w./2,gridy(k)+w/2);
-        posC(k,1)=gridx(k)+w./2;
-        posC(k,2)=gridy(k)+w./2;
-        
-        set(h(k),'FaceColor',irrad(k)/normIrr*[1 1 1]);
- end
-N_cell=N_pixel^2;
+exprvalue = 0.0005;
+% %% One cell per pixel
+%  for k=1:N_pixel.^2
+%         h(k)=rectangle('Position',[gridx(k) gridy(k) w,w],'EdgeColor','b');
+%         somas(k)=cell(gridx(k)+w./2,gridy(k)+w/2);
+%         posC(k,1)=gridx(k)+w./2;
+%         posC(k,2)=gridy(k)+w./2;
+%         
+%         set(h(k),'FaceColor',irrad(k)/normIrr*[1 1 1]);
+%  end
+% N_cell=N_pixel^2;
 
 %% Randomized cell positions
 
-% posC=randi([gridmin gridmax-diam],N_cell,2);
-%  for k=1:N_pixel.^2
-%         h(k)=rectangle('Position',[gridx(k) gridy(k) w,w],'EdgeColor','b');
-%         set(h(k),'FaceColor',irrad(k)/normIrr*[1 1 1]);
-%  end
-%  for k=1:N_cell
-%      somas(k)=cell(posC(k,1),posC(k,2));
-%  end
+posC=[ones(N_pixel,1).*(gridmin+w) [posP(1:N_pixel)]'];
+posC(1,2) = posC(1,2)+w;
+ for k=1:N_pixel.^2
+        h(k)=rectangle('Position',[gridx(k) gridy(k) w,w],'EdgeColor','b');
+        set(h(k),'FaceColor',irrad(k)/normIrr*[1 1 1]);
+ end
+ for k=1:N_pixel
+     somas(k)=cell(posC(k,1),posC(k,2));
+ end
+ N_cell=N_pixel
 % exprvalue = linspace(1e-2,1e-2,N_pixel^2);
 
 axis([gridmin gridmax gridmin gridmax]);
@@ -79,16 +81,15 @@ axis([gridmin gridmax gridmin gridmax]);
 retina=struct();
 
 for n=1:N_cell
-    pause
     %soma
-    [irrSoma, locSoma]=findirrad(diam,1,posC(n,:),irrad,posP,N_pixel);
+    %[irrSoma, locSoma]=findirrad(diam,1,posC(n,:),irrad,posP,N_pixel);
     %inital segment
-    [irrIN, locIN]=findirrad(diam,1,[posC(n,1)+diam,posC(n,2)],irrad,posP,N_pixel);
+    %[irrIN, locIN]=findirrad(diam,1,[posC(n,1)+diam,posC(n,2)],irrad,posP,N_pixel);
     %Thin Segment
-    [irrThin, locThin]=findirrad(60,2,[posC(n,1)+diam+30,posC(n,2)],irrad,posP,N_pixel);
+    %[irrThin, locThin]=findirrad(60,2,[posC(n,1)+diam+30,posC(n,2)],irrad,posP,N_pixel);
     %Axon Segment
-    axonL=gridmax-diam-90-posC(n,1);
-    nseg = ceil(axonL/500);
+    axonL=gridmax;
+    nseg = ceil(axonL/50);
     if axonL > 0
         [irrmags, chr2locs]=findirrad(axonL,nseg,[posC(n,1)+90+diam,posC(n,2)],irrad,posP,N_pixel);
     else
@@ -97,9 +98,9 @@ for n=1:N_cell
         nseg = 1;
     end
     
-    irrmags = [irrSoma irrIN irrThin irrmags];
-    chr2locs = [locSoma locIN locThin chr2locs];
-    exprlevs = exprvalue.*[1 ones(1,length(irrIN)) ones(1,length(irrThin)) ones(1,length(irrmags))];
+    irrmags = [0 0 [0 0] irrmags];
+    chr2locs = [0.5 0.5 [0.2 0.8] chr2locs];
+    exprlevs = exprvalue.*[0 0 0 0 ones(1,length(irrmags))];
     tot_nseg = length(irrmags);
     
     dlmwrite('matlab_irrmag_out',irrmags,' ');

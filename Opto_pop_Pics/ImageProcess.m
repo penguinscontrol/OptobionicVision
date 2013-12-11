@@ -107,7 +107,7 @@ image(map/255);
 
 wavelength = linspace(300,800,1000);
 sigma = 10.6165; % produces a 25 nm FWHM 
-brightness = 350; % candelas/square meter for our source
+brightness = 150; % candelas/square meter for our source
 % pixel_max = brightness/pixel_dim^2; % candela contribution per pixel
 source_irr = brightness./683./(pi*(0.005/2)^2)/1000; % mW/mm^2
 max_rad_per_pixel = source_irr.*(1000/pixel_dim)^2; %mW/pixel
