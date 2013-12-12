@@ -5,18 +5,13 @@ cell=@(x,y) rectangle('Curvature',[1,1],'Position',[x y diam*drawD diam*drawD]);
 
 gridmin=-12e3;
 gridmax=12e3;
-%N_pixel=5; %pixels per row %67 %input('Number of Cells per row?');
-N_cell=500; %total number of cells
+N_cell=700; %total number of cells
 
 %% Create a grid of the pixels
 figure; hold on
-irrad=ImageProcess('spectrum_chart.jpg',45);
-% irrad = [1 0 0;...
-%     1 0 0;...
-%     1 1 0];
+irrad=ImageProcess('Grill.jpg',15);
 N_pixel=length(irrad);
 
-figure();
 %% Generate the grid
  posP=linspace(gridmin,gridmax,N_pixel+1);
  [gridx,gridy] = meshgrid(posP(1:(end-1)),flipud(posP(1:(end-1))));
@@ -24,19 +19,7 @@ figure();
  normIrr=max(max(irrad));
  w=mean(diff(posP));
  exprvalue = 0.004;
-% %% One cell per pixel
-%  for k=1:N_pixel.^2
-%         h(k)=rectangle('Position',[gridx(k) gridy(k) w,w],'EdgeColor','b');
-%         somas(k)=cell(gridx(k)+w./2,gridy(k)+w/2);
-%         posC(k,1)=gridx(k)+w./2;
-%         posC(k,2)=gridy(k)+w./2;
-%         
-%         set(h(k),'FaceColor',irrad(k)/normIrr*[1 1 1]);
-%  end
-% N_cell=N_pixel^2;
-
 %% Randomized cell positions
-
 posC=randi([gridmin gridmax-diam],N_cell,2);
  for k=1:N_pixel.^2
         h(k)=rectangle('Position',[gridx(k) gridy(k) w,w],'EdgeColor','k');
@@ -47,33 +30,6 @@ posC=randi([gridmin gridmax-diam],N_cell,2);
  end
 axis([gridmin gridmax gridmin gridmax]);
 
-% %%This creates uniform randomly spaced cells
-% posC=randi([gridmin gridmax-diam],N_cell,2);
-% for n=1:N_cell
-%     somas(n)=cell(posC(n,1),posC(n,2));
-%     if N_cell<50
-%         axons(n)=line([posC(n,1)+diam gridmax],[posC(n,2) posC(n,2)],'Color',[.9 .1 .9]);
-%     end
-% end
-% pause(1e-4)
-
-%%Create stimulation irradiance values
-
-% sample=randi([1 100],10,1);
-% set(h(sample),'FaceColor',[.5 .9 .9])
-% 
-% irrad=zeros(size(h,1)*size(h,2),1);
-% irrad(sample)=.05;
-
-% value=linspace(50,50,N_pixel^2);
-%ones(1,N_pixel^2).*36e-4;
-%exprvalue = linspace(1e-4, 1e-2, N_pixel^2);
-%for n=1:(N_pixel^2)
-%     irrad(n)=value(n);
-%     text(posC(n,1)-100,posC(n,2)+100,sprintf('%f',exprvalue(n)));
-%end
-%  pause(5e-4);
-%%Send the information to neuron
 retina=struct();
 
 for n=1:N_cell
@@ -94,7 +50,6 @@ for n=1:N_cell
         nseg = 1;
     end
     
-    %exprlevs = exprvalue.*[1 ones(1,length(irrIN)) ones(1,length(irrThin)) ones(1,length(irrmags)).*[length(irrmags):-1:1]./length(irrmags)];
     exprlevs = exprvalue.*[1 ones(1,length(irrIN)) ones(1,length(irrThin)) ones(1,length(irrmags))];
     
     irrmags = [irrSoma irrIN irrThin irrmags];
@@ -122,8 +77,9 @@ for n=1:N_cell
     pkssoma = findpeaks(cells.vsoma,'MINPEAKHEIGHT',-20,'MINPEAKDISTANCE',40);
          if (length(pks)>0)
              if (length(pks)>10);
-                 if(length(pks)==1 & length(s
-                     length(pks)>length(pkssoma))
+%                  if(length(pks)==1 & length(pkssoma)>1)
+%                      set(somas(n),'FaceColor','m')
+                 if (length(pks)>length(pkssoma))
                     set(somas(n),'FaceColor','g')
                     %set(somas(n),'Curvature',[0 0])
                  elseif (length(pks)<length(pkssoma))
@@ -133,11 +89,15 @@ for n=1:N_cell
                      set(somas(n),'FaceColor','c')
                      %set(somas(n),'Curvature',[0 0])
                  else
-                     set(somas(n),'FaceColor','m')
+                     set(somas(n),'FaceColor','y')
                      %set(somas(n),'Curvature',[0 0])
                  end
              else
-                set(somas(n),'FaceColor','r')
+                 if(length(pkssoma)>1)
+                     set(somas(n),'FaceColor','m')
+                 else
+                    set(somas(n),'FaceColor','r')
+                 end
              end
             %good=irrad(n);
          else
