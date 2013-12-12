@@ -56,7 +56,7 @@ function [result]=ImageProcess(photo,pixel_dim)
 % Marc Sommer
 % sommer = imread('Sommer.jpg');
 % map = double(imresize(sommer, [15 15]));
-pho = imread(photo);
+pho = zeros(15,15);
 if nargin==1
     map = double(pho);
 % image(map/255);
@@ -211,8 +211,8 @@ irr = irr_pixel./(1000/pixel_dim)^2;
 %         result(k,l) = irr(pixel_dim+1-k,pixel_dim+1-l);
 %     end
 % end
-result = flipud(irr);
-imagesc(result)
+result = irr;
+imagesc(flipud(result))
 colormap gray
 colorbar
 

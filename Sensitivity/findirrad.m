@@ -33,6 +33,3 @@ for n=1:nseg; %ceil(nseg/2)
         expressions(n) = mean(expr(x:(x+1),y));
     end
 end
-
-
-

@@ -19,6 +19,19 @@ for n=1:nseg; %ceil(nseg/2)
     xAll(n)=x;
     yAll(n)=y;
     
+    [xsize,ysize] = size(irrad);
+    while x > xsize
+        x = x - 1;
+    end
+    while y > ysize
+        y = y - 1;
+    end
+    while x < 0
+        x = x + 1;
+    end
+    while y < 0
+        y = y + 1;
+    end
 %     point=xAll(n)+N_pixel*(yAll(n)-1);
 %     if point>length(irrad)
 %         irrmags(n)=0;

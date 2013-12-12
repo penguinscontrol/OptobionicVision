@@ -1,16 +1,16 @@
 close all; clear
-diam=30;
-drawD=4;
+diam=20;
+drawD=20;
 cell=@(x,y) rectangle('Curvature',[1,1],'Position',[x y diam*drawD diam*drawD]);
 
 gridmin=-12e3;
 gridmax=12e3;
 %N_pixel=5; %pixels per row %67 %input('Number of Cells per row?');
-N_cell=10; %total number of cells
+N_cell=500; %total number of cells
 
 %% Create a grid of the pixels
 figure; hold on
-irrad=ImageProcess('DukeLogo.jpg',15);
+irrad=ImageProcess('spectrum_chart.jpg',45);
 % irrad = [1 0 0;...
 %     1 0 0;...
 %     1 1 0];
@@ -18,35 +18,33 @@ N_pixel=length(irrad);
 
 figure();
 %% Generate the grid
-posP=linspace(gridmin,gridmax,N_pixel+1);
-[gridx,gridy] = meshgrid(posP(1:(end-1)),flipud(posP(1:(end-1))));
-gridy = flipud(gridy);
-normIrr=max(max(irrad));
-w=mean(diff(posP));
-exprvalue = linspace(1e-2,1e-2,N_pixel^2);
-%% One cell per pixel
- for k=1:N_pixel.^2
-        h(k)=rectangle('Position',[gridx(k) gridy(k) w,w],'EdgeColor','b');
-        somas(k)=cell(gridx(k)+w./2,gridy(k)+w/2);
-        posC(k,1)=gridx(k)+w./2;
-        posC(k,2)=gridy(k)+w./2;
-        
-        set(h(k),'FaceColor',irrad(k)/normIrr*[1 1 1]);
- end
-N_cell=N_pixel^2;
+ posP=linspace(gridmin,gridmax,N_pixel+1);
+ [gridx,gridy] = meshgrid(posP(1:(end-1)),flipud(posP(1:(end-1))));
+ gridy = flipud(gridy);
+ normIrr=max(max(irrad));
+ w=mean(diff(posP));
+ exprvalue = 0.004;
+% %% One cell per pixel
+%  for k=1:N_pixel.^2
+%         h(k)=rectangle('Position',[gridx(k) gridy(k) w,w],'EdgeColor','b');
+%         somas(k)=cell(gridx(k)+w./2,gridy(k)+w/2);
+%         posC(k,1)=gridx(k)+w./2;
+%         posC(k,2)=gridy(k)+w./2;
+%         
+%         set(h(k),'FaceColor',irrad(k)/normIrr*[1 1 1]);
+%  end
+% N_cell=N_pixel^2;
 
 %% Randomized cell positions
 
 posC=randi([gridmin gridmax-diam],N_cell,2);
  for k=1:N_pixel.^2
-        h(k)=rectangle('Position',[gridx(k) gridy(k) w,w],'EdgeColor','b');
+        h(k)=rectangle('Position',[gridx(k) gridy(k) w,w],'EdgeColor','k');
         set(h(k),'FaceColor',irrad(k)/normIrr*[1 1 1]);
  end
  for k=1:N_cell
      somas(k)=cell(posC(k,1),posC(k,2));
  end
-exprvalue = linspace(1e-2,1e-2,N_pixel^2);
-
 axis([gridmin gridmax gridmin gridmax]);
 
 % %%This creates uniform randomly spaced cells
@@ -96,36 +94,58 @@ for n=1:N_cell
         nseg = 1;
     end
     
+    %exprlevs = exprvalue.*[1 ones(1,length(irrIN)) ones(1,length(irrThin)) ones(1,length(irrmags)).*[length(irrmags):-1:1]./length(irrmags)];
+    exprlevs = exprvalue.*[1 ones(1,length(irrIN)) ones(1,length(irrThin)) ones(1,length(irrmags))];
+    
     irrmags = [irrSoma irrIN irrThin irrmags];
     chr2locs = [locSoma locIN locThin chr2locs];
-    exprlevs = [exprvalue(n) zeros(1,length(irrIN)) zeros(1,length(irrThin)) zeros(1,length(irrmags))];
     tot_nseg = length(irrmags);
     
     dlmwrite('matlab_irrmag_out',irrmags,' ');
     dlmwrite('matlab_chr2locs_out',chr2locs,' ');
     dlmwrite('matlab_expr_out',exprlevs,' ');
-    nrncommand = ['C:\nrn73\bin\nrniv.exe -nobanner -c "mat_nseg='...
+    nrncommand = ['C:\nrn73w64\bin64\nrniv.exe -nobanner -c "mat_nseg='...
         sprintf('%f',tot_nseg)...
         '" locals_pop.hoc -c quit()'];
     dos(nrncommand);
     fprintf('Irradiance was %f \n', irrmags(1));
     fprintf('Expression was %f',exprlevs(1));
-    retina(n).cells=importNeuron();
-         if (find(retina(n).cells.vsoma(10:end)>0))
-             set(somas(n),'FaceColor','r')
+    cells=importNeuron();
+    figure(99);
+    subplot(2,1,1)
+    plot(cells.vsoma)
+    title('V Soma')
+    subplot(2,1,2)
+    plot(cells.vaxon);
+    title('V Axon')
+    pks = findpeaks(cells.vaxon,'MINPEAKHEIGHT',-20,'MINPEAKDISTANCE',40);
+    pkssoma = findpeaks(cells.vsoma,'MINPEAKHEIGHT',-20,'MINPEAKDISTANCE',40);
+         if (length(pks)>0)
+             if (length(pks)>10);
+                 if(length(pks)==1 & length(s
+                     length(pks)>length(pkssoma))
+                    set(somas(n),'FaceColor','g')
+                    %set(somas(n),'Curvature',[0 0])
+                 elseif (length(pks)<length(pkssoma))
+                    set(somas(n),'FaceColor','b')
+                    %set(somas(n),'Curvature',[0 0])
+                 elseif (length(pks)==length(pkssoma))
+                     set(somas(n),'FaceColor','c')
+                     %set(somas(n),'Curvature',[0 0])
+                 else
+                     set(somas(n),'FaceColor','m')
+                     %set(somas(n),'Curvature',[0 0])
+                 end
+             else
+                set(somas(n),'FaceColor','r')
+             end
+            %good=irrad(n);
          else
             set(somas(n),'FaceColor',[.9 .9 .5])
+            % fails=fails+1;
+            % bad=irrad(n);
          end
-    retina(n).expr = exprlevs(1);
     
     irrmags = [];
     chr2locs = [];
-end
-
-figure;
-numplots = ceil(sqrt(N_cell));
-for a = 1:length(retina)
-    subplot(numplots,numplots,a);
-    plot(retina(a).cells.vsoma);
-    title(sprintf('%f',retina(a).expr));
 end
